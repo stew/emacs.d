@@ -1,0 +1,449 @@
+* style
+** nyan
+It's not just a cat, it gives a visual indication of how far you are
+scrolled through the file
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/nyan-mode")
+(require 'nyan-mode)
+(nyan-mode)
+#+end_src
+
+** colors
+I prefer white on black, but I leave the other version there to be
+able to easily switch on a sunny day
+#+begin_src emacs-lisp
+(progn
+;  (set-cursor-color "red")
+  (set-background-color "white")
+  (set-foreground-color "black")
+)
+(progn
+  (set-background-color "black")
+  (set-foreground-color "white")
+)
+#+end_src
+** font-lock
+#+begin_src emacs-lisp
+(global-font-lock-mode 1)
+#+end_src
+** modeline
+#+begin_src emacs-lisp
+(setq column-number-mode t)
+#+end_src
+
+** zoom
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+#+end_src
+
+** line-numbers
+#+begin_src emacs-lisp
+(global-linum-mode 1)
+#+end_src
+
+** misc
+#+begin_src emacs-lisp
+(show-paren-mode 1)
+(defadvice split-window-right (after rebalance-windows activate)
+  (balance-windows))
+(ad-activate 'split-window-right)
+#+end_src
+* widgets
+** projectile
+#+begin_src emacs-lisp
+(require 'projectile)
+(projectile-global-mode)
+#+end_src
+
+#+begin_src emacs-lisp
+(ido-mode t)
+(setq ido-auto-merge-delay-time 2)
+(setq ido-everywhere t)
+#+end_src
+** no tool bar
+#+begin_src emacs-lisp
+(if (not (null window-system))
+    (progn
+      (tool-bar-mode -1)))
+#+end_src
+
+** windmove
+#+begin_src emacs-lisp
+(global-set-key [M-right] `windmove-right)
+(global-set-key [M-left] `windmove-left)
+(global-set-key [M-up] `windmove-up)
+(global-set-key [M-down] `windmove-down)
+
+(global-set-key [s-right] `windmove-right)
+(global-set-key [s-left] `windmove-left)
+(global-set-key [s-up] `windmove-up)
+(global-set-key [s-down] `windmove-down)
+#+end_src
+
+** smex
+#+begin_src emacs-lisp
+(require `smex)
+(global-set-key (kbd "M-x") `smex)
+(global-set-key (kbd "M-X") `smex-major-mode-commands)
+#+end_src
+** multiple-cursors
+** ace jump
+#+begin_src emacs-lisp
+(autoload
+   'ace-jump-mode
+   "ace-jump-mode"
+   "Emacs quick move minor mode"
+   t)
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+
+(autoload
+  'ace-jump-mode-pop-mark
+  "ace-jump-mode"
+  "Ace jump back:-)"
+  t)
+(eval-after-load "ace-jump-mode"
+  '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+#+end_src
+
+#+begin_src emacs-lisp
+(require 'multiple-cursors)
+(global-set-key (kbd "C-M-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+#+end_src
+
+** hs
+#+begin_src emacs-lisp
+(define-prefix-command 'my-hs-prefix)
+(global-set-key (kbd "C-c C-h") 'my-hs-prefix)
+(global-set-key (kbd "C-c C-h SPC") 'hs-toggle-hiding)
+(global-set-key (kbd "C-c C-h C-h") 'hs-hide-block)
+(global-set-key (kbd "C-c C-h C-s") 'hs-show-block)
+(global-set-key (kbd "C-c C-h C-l") 'hs-hide-level)
+(global-set-key (kbd "C-c C-h C-S-h") 'hs-hide-all)
+(global-set-key (kbd "C-c C-h C-S-s") 'hs-show-all)
+(global-set-key (kbd "C-c C-h C-a") 'hs-show-all)
+(global-set-key (kbd "C-c C-h C-c") '(lambda () (interactive) (hs-hide-level 2)))
+#+end_src
+** key-chord
+#+begin_src emacs-lisp
+(require 'key-chord)
+(key-chord-define-global "jj" 'ace-jump-word-mode)
+(key-chord-define-global "jl" 'ace-jump-line-mode)
+(key-chord-define-global "jk" 'ace-jump-char-mode)
+(key-chord-define-global "ln" 'linum-mode)
+(key-chord-mode +1)
+#+end_src
+
+* keybindings
+#+begin_src emacs-lisp
+(global-set-key [delete] 'yow)
+(global-set-key "\M-,"    'beginning-of-buffer)
+(global-set-key "\M-."    'end-of-buffer)
+(global-set-key "\M-g"    'goto-line)
+(global-set-key "\C-xra"  'append-to-register)
+(global-set-key "\C-c\C-c" 'comment-region)
+(global-set-key "\C-o"      'open-line-and-indent)
+(global-set-key "\M-N" 'next-stews-counter)
+(global-set-key "\M-M" 'reset-stews-counter)
+(global-set-key "\C-s" 'isearch-forward-regexp)
+(global-set-key "\C-r" 'isearch-backward-regexp)
+(global-set-key "\M-$" 'replace-regexp)
+(global-set-key "\M-^" 'query-replace-regexp)
+(global-set-key "\M-#" 'replace-string)
+(global-set-key "\C-x," 'paren-match)
+(global-set-key (kbd "s-r") 'replace-regexp)
+(global-set-key (kbd "s-R") 'replace-string)
+(global-set-key (kbd "M-s-r") 'query-replace-regexp)
+(global-set-key (kbd "M-s-R") 'query-replace)
+(global-set-key (kbd "s-g") 'rgrep)
+(global-set-key (kbd "C-x g") 'rgrep)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x B") 'bury-buffer)
+(global-set-key (kbd "C-c RET") 'find-todo-org-file)
+(global-set-key (kbd "C-M-t") 'find-tag)
+(define-key 'iso-transl-ctl-x-8-map "l" [?λ])
+(define-key 'iso-transl-ctl-x-8-map "a" [?α])
+(define-key 'iso-transl-ctl-x-8-map "b" [?β])
+(define-key 'iso-transl-ctl-x-8-map "," [?←])
+#+end_src
+* shell
+#+begin_src emacs-lisp
+(add-hook 'shell-mode-hook (lambda () (local-set-key (kbd "C-c SPC") `compilation-mode) (toggle-read-only -1)))
+(add-hook 'compilation-mode-hook (lambda () (local-set-key (kbd "C-c SPC") `shell-mode)))
+#+end_src
+* modes
+** scala
+*** scala2-mode
+This is way better than the scala mode that is distributed by scala
+directly.
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/scala-mode2/")
+(require 'scala-mode2)
+(setq scala-indent:align-parameters t)
+(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+#+end_src
+*** ensime
+I generally track the HEAD of the github for ensime:
+https://github.com/aemoncannon/ensime
+then run `sbt stage` inside the ensime source directory,
+then copy the resulting dist directory to ~/.emacs.d/ensime
+
+#+begin_src emacs-lisp
+(setq ensime-default-server-cmd "bin/server")
+(setq ensime-graphical-tooltips nil)
+(setq ensime-tooltip-type-hints t)
+; (defun make-scalaz-doc-url (type &optional member)
+;   (ensime-make-scala-doc-url-helper
+;     "http://docs.typelevel.org/api/scalaz/stable/7.0.3/doc" type member))
+; 
+; (add-to-list 'ensime-doc-lookup-map '("^scalaz\\." . make-scalaz-doc-url))
+; 
+; (defun make-scalatra-doc-url (type &optional member)
+;   (ensime-make-scala-doc-url-helper
+;     "http://scalatra.org/2.2/api/" type member))
+; (add-to-list 'ensime-doc-lookup-map '("^org\\.scalatra\\." . make-scalatra-doc-url))
+
+(defun killall-java ()
+  (interactive)
+  (shell-command "killall java"))
+
+(global-set-key (kbd "C-c C-v K") 'killall-java)
+#+end_src
+*** sbt
+#+begin_src emacs-lisp
+(defun sbt-align-dependenciess (begin end)
+  "align library imports in the form: org.example %% 1.2.3 % 0.3.6"
+  (interactive "r")
+  (align-regexp begin end "\\(\\s-*\\)[=%]%?" nil nil t))
+
+#+end_src
+
+*** fancy arrows
+#+begin_src emacs-lisp
+(defun scala-right-arrow ()
+  (interactive)
+  (cond ((looking-back "=") 
+	 (backward-delete-char 1) (insert "⇒"))
+	((looking-back "-")
+	 (backward-delete-char 1) (insert "→"))
+	(t (insert ">"))))
+
+(defun scala-left-arrow ()
+  (interactive)
+  (if (looking-back "<") 
+      (progn (backward-delete-char 1)
+	     (insert "←"))
+    (insert "-")))
+
+(add-hook 'scala-mode-hook 
+	  '(lambda () 
+	     (set (make-local-variable 'beginning-of-defun-function) 'scala-beginning-of-defun)
+	     (set (make-local-variable 'end-of-defun-function) 'scala-end-of-defun)))
+
+#+end_src
+*** misc
+#+begin_src emacs-lisp
+(defun scala-beginning-of-defun (&optional arg)
+  (re-search-backward "\\(\\(case\\s*\\)?class\\|def\\|object\\|trait\\)" nil t arg))
+
+(defun scala-arg-list ()
+  (interactive)
+  (scala-beginning-of-defun)
+  (search-forward "(")
+  (backward-char))
+ 
+(defun scala-end-of-defun (&optional arg)
+  (scala-beginning-of-defunupper(list lower) where
+  binder a = (a :.) <$> (list lower)
+  (goto-char (- (search-forward "{") 1))
+  (forward-sexp)))
+
+(add-hook 'scala-mode-hook 
+	  '(lambda () 
+	     (set (make-local-variable 'beginning-of-defun-function) 'scala-beginning-of-defun)
+	     (set (make-local-variable 'end-of-defun-function) 'scala-end-of-defun)
+	     (hs-minor-mode)))
+
+(defun increment-number-at-point ()
+  (interactive)
+  (skip-chars-backward "0123456789")
+  (or (looking-at "[0123456789]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
+
+(key-chord-define-global "bv" 'increment-number-at-point)
+#+end_src
+
+** javascript
+#+begin_src emacs-lisp
+(setq js-indent-level 2)
+#+end_src
+
+** haskell
+#+begin_src emacs-lisp
+(add-to-list 'exec-path "~/.cabal/bin/")
+#+end_src
+;(add-to-list 'load-path "~/.emacs.d/ghc-mod")
+
+;(autoload 'ghc-init "ghc" nil t)
+;(add-hook 'haskell-mode-hook (lambda () (ghc-init) (flymake-mode)))
+** org-mode
+#+begin_src emacs-lisp
+(setq org-agenda-files (quote ("~/org/todo.org" "~/org/reverb.org" "~/.org-jira/RVB.org" "~/.org-jira/STIC.org")))
+(setq org-journal-dir "~/org/journal")
+
+(require 'org-protocol)
+
+(defun find-todo-org-file ()
+  "open my todo.org feil"
+  (interactive)
+  (find-file "~/org/todo.org")
+  )
+
+(require 'org-journal)
+
+#+end_src
+
+* directories
+some directores I open all the time, make a quick way to get a dired
+buffer open at the top level of a few projects
+#+begin_src emacs-lisp
+(defun datacontracts ()
+  (interactive)
+  (find-file "~/devel/datacontracts"))
+
+(defun veggr ()
+  (interactive)
+  (find-file "~/devel/veggr"))
+
+(defun wordnik-utils ()
+  (interactive)
+  (find-file "~/devel/wordnik-utils"))
+
+(defun wordnik-sbt-utils ()
+  (interactive)
+  (find-file "~/devel/wordnik-sbt-utils"))
+
+(defun bifrost ()
+  (interactive)
+  (find-file "~/devel/bifrost"))
+
+(defun fulla ()
+  (interactive)
+  (find-file "~/devel/fulla"))
+
+(defun scalaz ()
+  (interactive)
+  (find-file "~/src/scalaz/core/src/main/scala/scalaz"))
+#+end_src
+
+* third-party
+** org-jira
+import jira tickets into org-mode as todo items
+#+begin_src emacs-lisp
+(setq jiralib-host "wordnik.jira.com")
+#+end_src
+
+** hipchat
+#+begin_src emacs-lisp
+(setq ssl-program-name "gnutls-cli"
+      ssl-program-arguments '("--insecure" "--no-ca-verification" "-p" service host)
+      ssl-certificate-verification-policy 0)
+
+ 
+;; Connect using jabber-connect
+ 
+;; My username from the HipChat configuration
+;; from https://www.hipchat.com/account/xmpp
+(setq jabber-account-list '(("20394_230166@chat.hipchat.com")))
+
+;; To join HipChat rooms easily
+(defvar hipchat-number "20394")
+
+(defvar hipchat-nickname "Stew O'Connor")
+
+(defun hipchat-join (room)
+  (interactive "sRoom name: ")
+  (jabber-groupchat-join
+   (jabber-read-account)
+   (concat hipchat-number "_" room "@conf.hipchat.com")
+   hipchat-nickname
+   t))
+
+(defun hipchat-room (room) (concat hipchat-number "_" room "@conf.hipchat.com"))
+(hipchat-room "reverb")
+ 
+;; Mention nicknames in a way that HipChat clients will pickup
+(defun hipchat-mention (nickname)
+  (interactive
+   (list (jabber-muc-read-nickname jabber-group "Nickname: ")))
+  (insert (concat "@\"" nickname "\" ")))
+
+
+(add-hook 'jabber-post-connect-hook 'join-hipchat-rooms)
+
+(defun join-hipchat-rooms (jc)
+  (jabber-groupchat-join jc (hipchat-room "Bifrost") hipchat-nickname t)
+  (jabber-groupchat-join jc (hipchat-room "reverb") hipchat-nickname t)
+  (jabber-groupchat-join jc (hipchat-room "Backend") hipchat-nickname t))
+  
+#+end_src
+** jira
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/org-jira")
+(setq jiralib-url "https://wordnik.jira.com") 
+(require 'org-jira) 
+#+end_src
+* misc
+** scratch
+Add an easy way to jump to the scratch buffer, or create a new one if
+it doesn't exist
+#+begin_src emacs-lisp
+(defun scratch()
+  (interactive)
+  (switch-to-buffer "*scratch*")
+  (lisp-interaction-mode))
+#+end_src
+** die
+C-x C-c is way too easy to hit accidentally, so I unset this and add
+something easy to M-x
+#+begin_src emacs-lisp
+(global-unset-key "\C-x\C-c")
+(global-unset-key "\C-x\C-z")
+(global-unset-key "\C-z")
+(defun die ()
+  (interactive)
+  (save-buffers-kill-emacs))
+#+end_src
+** open-line-and-indent
+#+begin_src emacs-lisp
+(defun open-line-and-indent ()
+  (interactive)
+  (beginning-of-line)
+  (open-line 1)
+  (indent-for-tab-command))
+#+end_src
+** custom variables
+#+begin_src emacs-lisp
+(custom-set-variables
+ '(exec-path (quote ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
+ '(gh-profile-alist (quote (("github" :url "https://api.github.com" :username "stew" :password "J6FCeNbs"))))
+ '(indent-tabs-mode t)
+ '(split-width-threshold 200)
+ '(starttls-extra-arguments (quote ("--insecure")))
+)
+#+end_src
+#+begin_src emacs-lisp
+(setq-default display-buffer-reuse-frames t)
+#+end_src
+
+** emacs server
+#+begin_src emacs-lisp
+(server-start)
+#+end_src
