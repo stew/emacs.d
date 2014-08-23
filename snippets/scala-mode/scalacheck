@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: scalacheck property test
+# key: scalacheck
+# --
+package test
+
+import org.scalacheck._
+import Arbitrary._
+import org.scalacheck.Prop.forAll
+
+object $1Spec extends Properties("$1") {
+  property("${2:property}") = forAll {(${3:n: Int}) ⇒
+    ${0: n + 1 > n}
+  }
+}

@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: specw2 immutable spec
+# key: specs2
+# --
+package `(scala-package-name-from-buffer)`
+package test
+
+import org.specs2._
+
+class $1Spec extends Specification {
+  def is = s2"""
+This is a specification to check $2
+
+The $3 should
+    $4                        $e1  
+  """
+
+  def e1 = ${0:1 + 2 must_== 3}
+}

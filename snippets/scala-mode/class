@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: class Foo extends Bar Wth Baz
+# key: class
+# --
+class $1 ${2:extends $3${4:with $5}} {
+  $0
+}
