@@ -2,6 +2,23 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
+
+
+; list the packages you want
+(setq package-list '(projectile git-link smex multiple-cursors key-chord git-gutter scala-mode2 ensime idris-mode org-jira confluence notmuch notmuch-labeler znc))
+
+; activate all the packages (in particular autoloads)
+(package-initialize)
+
+; fetch the list of packages available 
+(unless package-archive-contents
+  (package-refresh-contents))
+
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
 (require 'ob-tangle)
 (org-babel-load-file "~/.emacs.d/Stew.org")
 
@@ -54,10 +71,4 @@
    (quote
     (("loach.vireo.org" 9999 t
       ((chat\.freenode\.net "stew" "bianchirb1")))))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ensime-compile-errline ((t (:foreground "#ff5556")))))
 (put 'narrow-to-region 'disabled nil)

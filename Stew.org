@@ -336,7 +336,7 @@ directly.
 (defun run-ensime-generate (sbt-path)
   (switch-to-buffer "*ensime-generate*")
   (cd sbt-path)
-  (start-process "ensime-generate" "*ensime-generate*" "sbt" "ensime generate"))
+  (start-process "ensime-generate" "*ensime-generate*" "sbt" "ensime generate -s"))
 
 (defun run-genCtags (sbt-path)
   (switch-to-buffer "*genCtags*")
@@ -387,10 +387,16 @@ because you know I'm fancy like that
 	     (insert "←"))
     (insert "-")))
 
-(add-hook 'scala-mode-hook 
-	  '(lambda () 
-	     (local-set-key (kbd "-") `scala-left-arrow)
-	     (local-set-key (kbd ">") `scala-right-arrow)))
+(defun scala-enable-fancy-arrows ()
+  (interactive)
+  (local-set-key (kbd "-") `scala-left-arrow)
+  (local-set-key (kbd ">") `scala-right-arrow))
+  
+(defun scala-disable-fancy-arrows ()
+  (interactive)
+  (local-set-key (kbd "-") `self-insert-command)
+  (local-set-key (kbd ">") `self-insert-command))
+  
 
 
 #+end_src
