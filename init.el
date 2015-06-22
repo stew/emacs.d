@@ -5,7 +5,7 @@
 
 
 ; list the packages you want
-(setq package-list '(projectile git-link smex multiple-cursors key-chord git-gutter scala-mode2 ensime idris-mode org-jira confluence notmuch notmuch-labeler znc))
+(setq package-list '(projectile git-link smex multiple-cursors key-chord git-gutter scala-mode2 ensime idris-mode org-jira confluence notmuch notmuch-labeler znc magit))
 
 ; activate all the packages (in particular autoloads)
 (package-initialize)
@@ -40,9 +40,6 @@
  '(exec-path
    (quote
     ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
- '(gh-profile-alist
-   (quote
-    (("github" :url "https://api.github.com" :username "stew" :password "J6FCeNbs"))))
  '(haskell-font-lock-symbols t)
  '(haskell-mode-hook
    (quote
@@ -72,3 +69,4 @@
     (("loach.vireo.org" 9999 t
       ((chat\.freenode\.net "stew" "bianchirb1")))))))
 (put 'narrow-to-region 'disabled nil)
+(put 'set-goal-column 'disabled nil)

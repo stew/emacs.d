@@ -6,7 +6,7 @@ package test
 
 import org.scalacheck._
 import Arbitrary._
-import org.scalacheck.Prop.forAll
+import org.scalacheck.Prop._
 
 object $1Spec extends Properties("$1") {
   property("${2:property}") = forAll {(${3:n: Int}) ⇒

@@ -304,6 +304,7 @@ directly.
 ;(add-to-list 'load-path "~/.emacs.d/scala-mode2/")
 (require 'scala-mode2)
 (setq scala-indent:align-parameters t)
+(setq scala-indent:use-javadoc-style t)
 #+end_src
 *** ensime
 #+begin_src emacs-lisp
@@ -315,16 +316,6 @@ directly.
 ;(setq ensime-graphical-tooltips nil)
 ;(setq ensime-tooltip-type-hints t)
 (setq ensime-sbt-command "~/bin/sbt")
-(defun make-scalaz-doc-url (type &optional member)
-  (ensime-make-scala-doc-url-helper
-    "http://docs.typelevel.org/api/scalaz/stable/7.0.3/doc" type member))
-
-(add-to-list 'ensime-doc-lookup-map '("^scalaz\\." . make-scalaz-doc-url))
-
-(defun make-scalatra-doc-url (type &optional member)
-  (ensime-make-scala-doc-url-helper
-    "http://scalatra.org/2.2/api/" type member))
-(add-to-list 'ensime-doc-lookup-map '("^org\\.scalatra\\." . make-scalatra-doc-url))
 
 (defun killall-java ()
   (interactive)
@@ -670,11 +661,7 @@ Org-mobile setup:
 #+end_src
 ** proof-general
 #+begin_src emacs-lisp
-(setq coq-prog-name "/usr/bin/coqtop")
-;; (setq coq-prog-args "-emacs-U")
-(add-to-list 'load-path "~/.emacs.d/proofgeneral/coq")
-(setq proof-splash-enable nil)
-(load-library "pg-init.el")
+;(setq proof-splash-enable nil)
 #+end_src
 * directories
 some directores I open all the time, make a quick way to get a dired
@@ -709,23 +696,6 @@ buffer open at the top level of a few projects
   (find-file "~/devel/scalaz/core/src/main/scala/scalaz"))
 #+end_src
 * third-party
-** org-jira							   :noexport:
-import jira tickets into org-mode as todo items
-#+begin_src emacs-lisp
-(setq jiralib-host "wordnik.jira.com")
-#+end_src
-
-** jira								   :noexport:
-#+begin_src emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/org-jira")
-(setq jiralib-url "https://wordnik.jira.com") 
-(require 'org-jira) 
-#+end_src
-** confluence
-#+begin_src emacs-lisp
-  (require 'confluence)
-  (setq confluence-url "https://wordnik.jira.com/wiki/rpc/xmlrpc")
-#+end_src
 * yasnippet
 #+begin_src emacs-lisp
 (setq yas-snippet-dirs
@@ -917,7 +887,6 @@ something easy to M-x
 (setq-default indent-tabs-mode nil)
 (custom-set-variables
  '(exec-path (quote ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
- '(gh-profile-alist (quote (("github" :url "https://api.github.com" :username "stew" :password "J6FCeNbs"))))
  '(indent-tabs-mode nil)
  '(split-width-threshold 200)
  '(starttls-extra-arguments (quote ("--insecure")))
