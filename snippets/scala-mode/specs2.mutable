@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: specw2 mutable spec
+# key: specs2
+# --
+package `(scala-package-name-from-buffer)`
+package test
+
+import org.specs2.mutable._
+import org.specs2.ScalaCheck
+
+class $1Spec extends Specification with ScalaCheck {
+  "$2" should {
+    "$3" in {
+      $0    
+    }
+  }
+}

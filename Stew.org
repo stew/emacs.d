@@ -1,0 +1,951 @@
+#+TITLE: stew's emacs init
+#+AUTHOR: Mike (stew) O'Connor
+#+EMAIL: stew@vireo.org
+#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
+#+OPTIONS: author:t c:nil creator:comment d:(not "LOGBOOK") date:t
+#+OPTIONS: e:t email:nil f:t inline:t num:t p:nil pri:nil stat:t
+#+OPTIONS: tags:t tasks:t tex:t timestamp:t toc:t todo:t |:t
+#+options: html-style:nil
+#+CREATOR: Emacs 24.3.50.1 (Org mode 8.2.5h)
+#+DESCRIPTION:
+#+EXCLUDE_TAGS: noexport
+#+KEYWORDS:
+#+LANGUAGE: en
+#+SELECT_TAGS: export
+#+TAGS: { drill(d) }
+This is my .emacs file, organized into an org-mode document using org-babel.
+* load-path
+#+begin_src emacs-lisp
+(let ((default-directory "~/.emacs.d/"))
+  (normal-top-level-add-subdirs-to-load-path))
+#+end_src
+* style
+** nyan
+http://nyan-mode.buildsomethingamazing.com/
+
+It's not just a cat, it gives a visual indication of how far you are
+scrolled through the file.
+
+Currently disabled because it is messing up emerge
+#+begin_src emacs-lisp
+(if (not (null window-system)) (add-to-list 'load-path "~/.emacs.d/nyan-mode") (require 'nyan-mode) (nyan-mode))
+#+end_src
+
+** colors
+I prefer white on black, but I leave the other version there to be
+able to easily switch on a sunny day
+#+begin_src emacs-lisp
+(progn
+;  (set-cursor-color "red")
+  (set-background-color "white")
+  (set-foreground-color "black")
+)
+(progn
+  (set-background-color "black")
+  (set-foreground-color "white")
+)
+#+end_src
+** font-lock
+#+begin_src emacs-lisp
+(global-font-lock-mode 1)
+#+end_src
+** modeline
+#+begin_src emacs-lisp
+(setq column-number-mode t)
+#+end_src
+
+** zoom
+bind expected keys to make the font bigger or smaller.
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+#+end_src
+
+** line-numbers
+Disabled for now, as it seems to have some bad interaction with
+something else, which I would guess is git-gutter
+#+begin_src emacs-lisp
+; (global-linum-mode 1)
+#+end_src
+** misc
+when I make a close {paren,brace,bracket}, hilight the one it closes
+#+begin_src emacs-lisp
+(show-paren-mode 1)
+#+end_src
+
+when I create a third column, make them all 1/3 size
+#+begin_src emacs-lisp
+(defadvice split-window-right (after rebalance-windows activate)
+  (balance-windows))
+(ad-activate 'split-window-right)
+#+end_src
+#+begin_src emacs-lisp
+(setq visible-bell t)
+(if (not (null window-system))
+    (progn
+      (tool-bar-mode -1)))
+#+end_src
+* widgets
+** helm								      :drill:
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-x") 'helm-M-x)
+;;(global-set-key (kbd "C-x C-f") 'ido-find-file)
+(global-set-key (kbd "C-x g") 'helm-do-grep)
+(setq helm-grep-default-command "/usr/local/bin/ggrep")
+#+end_src
+** projectile
+http://wikemacs.org/index.php/Projectile
+
+I use this one constantly, it gives me keys to "open file in this
+project" and "grep files in this project" where project is determined
+by travelling through ancestral directories until wy find a .git or
+similar
+
+#+begin_src emacs-lisp
+(require 'projectile)
+(projectile-global-mode)
+#+end_src
+** ido
+http://wikemacs.org/index.php/Ido
+
+This replaces the minibuffer prompt for finding files, switching
+buffers and more. Can't imagine live without it once you get used to
+it.  
+
+#+begin_src emacs-lisp
+(ido-mode t)
+(setq ido-auto-merge-delay-time 2)
+(setq ido-everywhere t)
+#+end_src
+
+- hit C-f to go back to a "normal" prompt
+- if you start typing with a forward slash, it will assume you mean "erase the entire current path and start from the root directory"
+- if you start typing with a tilde, it assumes you mean "erase the current path and start from ~"
+- C-j from find-file means "yes this file, even if it doesn't already exist"
+- C-d from find-file means "open this dir in dired mode"
+
+** windmove
+http://www.emacswiki.org/emacs/WindMove
+
+gives you ways to "move to the window to the left of the current
+window" and so on, handy when you are on a bigger display and emacs
+gets sliced up into many windows.
+
+#+begin_src emacs-lisp
+(global-set-key [M-right] `windmove-right)
+(global-set-key [M-left] `windmove-left)
+(global-set-key [M-up] `windmove-up)
+(global-set-key [M-down] `windmove-down)
+
+(global-set-key [s-right] `windmove-right)
+(global-set-key [s-left] `windmove-left)
+(global-set-key [s-up] `windmove-up)
+(global-set-key [s-down] `windmove-down)
+#+end_src
+
+** git-link
+cloned from https://github.com/sshaw/git-link.git
+
+Generate a github link to the current point or region.
+
+#+begin_src emacs-lisp
+;(add-to-list 'load-path "~/.emacs.d/git-link")
+(require `git-link)
+#+end_src
+** smex
+http://www.emacswiki.org/emacs/Smex
+
+M-x enhancement.
+#+begin_src emacs-lisp
+(require `smex)
+(global-set-key (kbd "M-x") `smex)
+(global-set-key (kbd "M-X") `smex-major-mode-commands)
+#+end_src
+** ace jump
+http://www.emacswiki.org/emacs/AceJump
+
+fast cursor movement. see the demo:
+http://dl.dropboxusercontent.com/u/3254819/AceJumpModeDemo/AceJumpDemo.htm
+
+#+begin_src emacs-lisp
+(autoload
+   'ace-jump-mode
+   "ace-jump-mode"
+   "Emacs quick move minor mode"
+   t)
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+
+(autoload
+  'ace-jump-mode-pop-mark
+  "ace-jump-mode"
+  t)
+(eval-after-load "ace-jump-mode"
+  '(ace-jump-mode-enable-mark-sync))
+(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+#+end_src
+** multiple cursors
+#+begin_src emacs-lisp
+(require 'multiple-cursors)
+(global-set-key (kbd "C-M-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+#+end_src
+
+** hs
+code folding. lets you collapse method bodies in source.
+
+#+begin_src emacs-lisp
+(define-prefix-command 'my-hs-prefix)
+(global-set-key (kbd "C-c C-h") 'my-hs-prefix)
+(global-set-key (kbd "C-c C-h SPC") 'hs-toggle-hiding)
+(global-set-key (kbd "C-c C-h C-h") 'hs-hide-block)
+(global-set-key (kbd "C-c C-h C-s") 'hs-show-block)
+(global-set-key (kbd "C-c C-h C-l") 'hs-hide-level)
+(global-set-key (kbd "C-c C-h C-S-h") 'hs-hide-all)
+(global-set-key (kbd "C-c C-h C-S-s") 'hs-show-all)
+(global-set-key (kbd "C-c C-h C-a") 'hs-show-all)
+(global-set-key (kbd "C-c C-h C-c") '(lambda () (interactive) (hs-hide-level 2)))
+#+end_src
+** key-chord
+I ran out of pinkies and modifier keys, this lets you assign a
+function to two keys hit in rapid succession
+#+begin_src emacs-lisp
+(require 'key-chord)
+(key-chord-define-global "jj" 'ace-jump-word-mode)
+(key-chord-define-global "jl" 'ace-jump-line-mode)
+(key-chord-define-global "jk" 'ace-jump-char-mode)
+(key-chord-define-global "jn" 'linum-mode)
+(key-chord-mode +1)
+#+end_src
+
+** magit
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c C-v m") 'magit-status)
+#+end_src
+** ediff
+#+begin_src emacs-lisp
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+#+end_src
+** git-gutter							      :drill:
+#+begin_src emacs-lisp
+(require 'git-gutter) 
+
+;; If you enable global minor mode
+(global-git-gutter-mode t)
+
+;; If you would like to use git-gutter.el and linum-mode
+;(git-gutter:linum-setup)
+
+(define-prefix-command 'gg-prefix)
+(global-set-key (kbd "C-x C-g") 'gg-prefix)
+
+(global-set-key (kbd "C-x C-g t") 'git-gutter:toggle)
+(global-set-key (kbd "C-x C-g =") 'git-gutter:popup-hunk)
+
+;; Jump to next/previous hunk
+(global-set-key (kbd "C-x p") 'git-gutter:previous-hunk)
+(global-set-key (kbd "C-x n") 'git-gutter:next-hunk)
+
+;; Stage current hunk
+(global-set-key (kbd "C-x C-g s") 'git-gutter:stage-hunk)
+
+;; Revert current hunk
+(global-set-key (kbd "C-x C-g r") 'git-gutter:revert-hunk)
+
+#+end_src
+** calendar
+#+begin_src emacs-lisp
+ (setq mark-holidays-in-calendar t)
+#+end_src
+* keybindings
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-SPC") 'cycle-spacing)
+(global-set-key [delete] 'yow)
+(global-set-key "\M-,"    'beginning-of-buffer)
+(global-set-key "\M-."    'end-of-buffer)
+(global-set-key "\M-g"    'goto-line)
+(global-set-key "\C-xra"  'append-to-register)
+(global-set-key "\C-c\C-c" 'comment-region)
+(global-set-key "\C-o"      'open-line)
+(global-set-key "\M-N" 'next-stews-counter)
+(global-set-key "\M-M" 'reset-stews-counter)
+(global-set-key "\C-s" 'isearch-forward-regexp)
+(global-set-key "\C-r" 'isearch-backward-regexp)
+(global-set-key "\M-$" 'replace-regexp)
+(global-set-key "\M-^" 'query-replace-regexp)
+(global-set-key "\M-#" 'replace-string)
+(global-set-key "\C-x," 'paren-match)
+(global-set-key (kbd "s-r") 'replace-regexp)
+(global-set-key (kbd "s-R") 'replace-string)
+(global-set-key (kbd "M-s-r") 'query-replace-regexp)
+(global-set-key (kbd "M-s-R") 'query-replace)
+(global-set-key (kbd "s-g") 'rgrep)
+(global-set-key (kbd "C-x g") 'rgrep)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x B") 'bury-buffer)
+(global-set-key (kbd "C-c RET") 'find-todo-org-file)
+(define-key 'iso-transl-ctl-x-8-map "l" [?λ])
+(define-key 'iso-transl-ctl-x-8-map "a" [?α])
+(define-key 'iso-transl-ctl-x-8-map "b" [?β])
+(define-key 'iso-transl-ctl-x-8-map "," [?←])
+(define-key 'iso-transl-ctl-x-8-map "t" [?⊤])
+(define-key 'iso-transl-ctl-x-8-map "f" [?⊥])
+#+end_src
+* modes
+** scala
+*** scala2-mode
+This is way better than the scala mode that is distributed by scala
+directly.
+#+begin_src emacs-lisp
+;(add-to-list 'load-path "~/.emacs.d/scala-mode2/")
+(require 'scala-mode2)
+(setq scala-indent:align-parameters t)
+(setq scala-indent:use-javadoc-style t)
+#+end_src
+*** ensime
+#+begin_src emacs-lisp
+;(add-to-list 'load-path "~/.emacs.d/ensime")
+(require 'ensime)
+;(setq ensime-default-server-cmd "bin/server")
+;(setq ensime-default-server-cmd "bin/server")
+;(setq ensime-default-server-host "localhost")
+;(setq ensime-graphical-tooltips nil)
+;(setq ensime-tooltip-type-hints t)
+(setq ensime-sbt-command "~/bin/sbt")
+
+(defun killall-java ()
+  (interactive)
+  (shell-command "killall java"))
+
+(global-set-key (kbd "C-c C-v K") 'killall-java)
+(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+
+(defun run-ensime-generate (sbt-path)
+  (switch-to-buffer "*ensime-generate*")
+  (cd sbt-path)
+  (start-process "ensime-generate" "*ensime-generate*" "sbt" "ensime generate -s"))
+
+(defun run-genCtags (sbt-path)
+  (switch-to-buffer "*genCtags*")
+  (cd sbt-path)
+  (start-process "genCtags" "*genCTags*" "sbt" "genCtags"))
+
+(defun ensime-generate ()
+  (interactive)
+  (let ((my-sbt-file (find-containing-dir-upwards "build.sbt")))
+    (when my-sbt-file
+      (message "generate ensimme configuration for project: %s" my-sbt-file)
+      (run-ensime-generate my-sbt-file))))
+
+(defun genCtags ()
+  (interactive)
+  (let ((my-sbt-file (find-containing-dir-upwards "build.sbt")))
+    (when my-sbt-file
+      (message "generate ctags for project: %s" my-sbt-file)
+      (run-genCtags my-sbt-file))))
+
+#+end_src
+*** sbt
+#+begin_src emacs-lisp
+(defun sbt-align-dependenciess (begin end)
+  "align library imports in the form: org.example %% 1.2.3 % 0.3.6"
+  (interactive "r")
+  (align-regexp begin end "\\(\\s-*\\)[=%]%?" nil nil t))
+
+(add-hook 'scala-mode-hook (lambda () (local-set-key (kbd "C-x |") `sbt-align-dependenciess)))
+
+#+end_src
+
+*** fancy arrows
+because you know I'm fancy like that
+#+begin_src emacs-lisp
+(defun scala-right-arrow ()
+  (interactive)
+  (cond ((looking-back "=") 
+	 (backward-delete-char 1) (insert "⇒"))
+	((looking-back "-")
+	 (backward-delete-char 1) (insert "→"))
+	(t (insert ">"))))
+
+(defun scala-left-arrow ()
+  (interactive)
+  (if (looking-back "<") 
+      (progn (backward-delete-char 1)
+	     (insert "←"))
+    (insert "-")))
+
+(defun scala-enable-fancy-arrows ()
+  (interactive)
+  (local-set-key (kbd "-") `scala-left-arrow)
+  (local-set-key (kbd ">") `scala-right-arrow))
+  
+(defun scala-disable-fancy-arrows ()
+  (interactive)
+  (local-set-key (kbd "-") `self-insert-command)
+  (local-set-key (kbd ">") `self-insert-command))
+  
+
+
+#+end_src
+*** yasnippet
+**** scala-mode-def-and-args-doc
+#+begin_src emacs-lisp
+(defun scala-mode-def-and-args-doc ()
+  (save-excursion
+    (if (re-search-forward
+	  "[ \t\n]*def[ \t\n]+\\([a-zA-Z0-9_:=]+\\)[ \t\n]*")
+	(buffer-substring (match-beginning 1) (match-end 1))
+        " ")))
+
+
+
+#+end_src
+**** package-name-from-buffer
+I use this in yasnippets to automatically calculate a package name
+#+begin_src emacs-lisp
+(defun build-package-name (pn d)
+  (if (null d)
+      pn
+    (let ((c (car d)))
+      (if (equal c "scala")
+	  pn
+	(build-package-name (concat c "." pn) (cdr d))))))
+ 
+(defun scala-package-name-from-buffer ()
+  (let ((l (reverse (split-string (buffer-file-name) "/"))))
+    (build-package-name (cadr l) (cddr l))))
+#+end_src
+**** insert-snippet
+#+begin_src emacs-lisp
+(add-hook 'scala-mode-hook 
+	  '(lambda () 
+	     (local-set-key (kbd "C-c i") `yas-insert-snippet)))
+#+end_src
+
+*** visit-spec
+This tries to find where the Spec/test of the current buffer lives,
+and either creates it, or visits it
+#+begin_src emacs-lisp
+ (defun split-path-of-file (f)
+"return dirname.filename" (let ((sp (reverse (split-string f "/"))))
+(cons (mapconcat 'identity (reverse (cdr sp)) "/") (car sp))))
+
+(defun scala-test-file-name (f)
+  (let* ((sp (reverse (split-string f "\\.")))
+	 (h (car sp))
+	 (fn (cadr sp)))
+    (mapconcat 'identity (reverse (cons h (cons (concat fn "Spec")(cddr sp)))) ".")))
+
+(defun scala-find-src (sf d)
+  (if (null d)
+      sf
+    (let ((c (car d)))
+      (if (equal c "main")
+	  (append (reverse (cdr d)) (list "test") sf)
+	(scala-find-src (cons c sf) (cdr d))))))
+
+(defun scala-test-file-from-buffer ()
+  (let* ((d (reverse (split-string (buffer-file-name) "/")))
+	(test (scala-find-src nil d)))
+    (scala-test-file-name (mapconcat 'identity test "/"))))
+
+(defun scala-visit-spec ()
+  (interactive)
+  (let* ((tf (scala-test-file-from-buffer))
+	 (pf (split-path-of-file tf))
+	 (dn (car pf))
+	 (fn (concat dn "/" (cdr pf))))
+    (if (file-exists-p dn)
+	(find-file fn)
+      (if (y-or-n-p (concat dn " doesn't exist, create it?"))
+	  (progn
+	    (mkdir dn t)
+	    (find-file fn))))))
+
+(add-hook 'scala-mode-hook 
+	  '(lambda () 
+	     (local-set-key (kbd "C-c t") `scala-visit-spec)))
+
+
+#+end_src
+*** create project structure
+#+begin_src emacs-lisp
+(defun make-scala-project-dirs ()
+  (interactive)
+  (let ((dn (find-containing-dir-upwards "build.sbt")))
+    (if dn
+      (if (y-or-n-p (concat "generate directory structure for project: " dn))
+	  (let* ((src (concat dn "/src"))
+		 (main (concat src "/main"))
+		 (test (concat src "/test"))
+		 (mainscala (concat main "/scala"))
+		 (testscala (concat test "/scala")))
+	    
+	    (mkdir src t)
+	    (mkdir main t)
+	    (mkdir test t)
+	    (mkdir mainscala t)
+	    (mkdir testscala t)))
+      (message "could not find build.sbt"))))
+#+end_src
+*** hack for compilation buffer
+this lets me toggle a shell window where i'm running sbt back and forth from compilation-mode and shell-mode
+#+begin_src emacs-lisp
+(add-hook 'shell-mode-hook (lambda () (local-set-key (kbd "C-c SPC") `compilation-mode) (toggle-read-only -1)))
+(add-hook 'compilation-mode-hook (lambda () (local-set-key (kbd "C-c SPC") `shell-mode)))
+#+end_src
+
+*** misc
+#+begin_src emacs-lisp
+; this makes C-M-a do a better job of finding the beginning of a definition
+(defun scala-beginning-of-defun (&optional arg)
+  (re-search-backward "\\(\\(case\\s*\\)?class\\|def\\|object\\|trait\\)" nil t arg))
+ 
+; this makes C-M-e do a better job of finding the beginning of a definition
+(defun scala-end-of-defun (&optional arg)
+  (scala-beginning-of-defun)
+  (goto-char (- (search-forward "{") 1))
+  (forward-sexp))
+
+(add-hook 'scala-mode-hook 
+	  '(lambda () 
+	     (set (make-local-variable 'beginning-of-defun-function) 'scala-beginning-of-defun)
+	     (set (make-local-variable 'end-of-defun-function) 'scala-end-of-defun)
+	     (hs-minor-mode)))
+
+(defun increment-number-at-point ()
+  (interactive)
+  (skip-chars-backward "0123456789")
+  (or (looking-at "[0123456789]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
+
+(key-chord-define-global "bv" 'increment-number-at-point)
+#+end_src
+
+*** transpose-arguments
+#+begin_src emacs-lisp
+(defun backward-n-args (arg)
+  "in a comma separated list of arguments, this will move backward n arguments"
+  (if (> arg 0)
+      (progn
+	(skip-chars-backward " \n\t,")
+	(re-search-backward "[(,]" nil 'move)
+	(skip-chars-forward "[( ,\n\t")
+	(forward-n-args (- arg 1)))))
+
+(defun forward-n-args (arg)
+  "in a comma separated list of arguments, this will move forward n arguments"
+  (if (> arg 0)
+    (progn
+      (re-search-forward "[,)]" nil 'move)
+      (skip-chars-backward ")")
+      (skip-chars-forward ", \n\t")
+      (forward-n-args (- arg 1))
+      )))
+
+(defun forward-arg (arg)
+  "in a comma separated list of arguments, this will move forward one argument"
+  (interactive "^p")
+  (cond
+   ((< arg 0) (backward-n-args (- 0 arg)))
+   ((> arg 0) (forward-n-args arg))))
+
+(defun current-arg ()
+  (let* ((beg (point))
+	 (end (save-excursion
+		(forward-n-args 1)
+		(skip-chars-backward ", \n\t")
+		(point))))
+    (cons beg end)))
+
+(defun len-tup (tup)
+  (- (cdr tup) (car tup)))
+
+(defun transpose-args ()
+  (interactive)
+  (atomic-change-group
+    (let*
+	((b1 (make-marker)) ; will mark the beginning of the second arg
+	 (b2 (make-marker)) ; will mark the beginning of the first arg
+	 (be1 (current-arg)) ; begin and end of second arg
+	 (be2 (save-excursion ; begin and end of first arg
+		(backward-n-args 1)
+		(current-arg)))
+	 (le1 (len-tup be1)) ; len of second arg
+	 (le2 (len-tup be2)) ; len of first arg
+	 (arg2 (buffer-substring (car be2) (cdr be2))) ; first arg
+	 (arg1 (delete-and-extract-region (car be1) (cdr be1)))) ; second arg
+      (set-marker b1 (car be1))
+      (set-marker b2 (car be2))
+      (goto-char b2) ; go to first arg
+      (insert-before-markers arg1) ; insert second
+      (goto-char b2) ; go to first arg
+      (delete-region (point) (+ (point) le2)) ; delete first
+      (goto-char b1) ; go to orig position
+      (insert arg2) ; insert first arg
+      (set-marker b1 nil) ; erase
+      (set-marker b2 nil) ; erase
+      (skip-chars-forward ", \n\t"))))
+
+(add-hook 'scala-mode-hook (lambda () 
+  (local-set-key (kbd "s-f") `forward-arg)
+  (local-set-key (kbd "s-b") `backward-arg)
+  (local-set-key (kbd "s-t") `transpose-args)))
+
+#+end_src
+** javascript
+#+begin_src emacs-lisp
+(setq js-indent-level 2)
+#+end_src
+
+** haskell
+#+begin_src emacs-lisp
+(add-to-list 'exec-path "~/.cabal/bin/")
+(add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin/")
+(add-to-list 'load-path "~/.cabal/share/x86_64-osx-ghc-7.8.3/ghc-mod-4.1.6")
+(autoload 'ghc-init "ghc" nil t)
+(autoload 'ghc-debug "ghc" nil t)
+(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+(setq ghc-debug t)
+#+end_src
+** org-mode
+#+begin_src emacs-lisp
+(setq org-agenda-files (quote ("~/org/todo.org" "~/org/reverb.org")))
+(setq org-journal-dir "~/org/journal")
+
+(require 'org-protocol)
+
+(defun find-todo-org-file ()
+  "open my todo.org feil"
+  (interactive)
+  (find-file "~/org/todo.org")
+  )
+
+(load-library "ox-md")
+(load-library "ox-org")
+(setq org-src-fontify-natively t)
+(setq org-default-notes-file (concat org-directory "/todo.org"))
+(define-key global-map "\C-cc" 'org-capture)
+(require 'org-mac-protocol)
+
+
+#+end_src
+
+Org-mobile setup:
+
+#+begin_src emacs-lisp
+;; Set to the location of your Org files on your local system
+(setq org-directory "~/org")
+;; Set to the name of the file where new notes will be stored
+(setq org-mobile-inbox-for-pull "~/org/flagged.org")
+;; Set to <your Dropbox root directory>/MobileOrg.
+(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+
+(global-set-key (kbd "C-c a") `org-agenda)
+#+end_src
+
+
+** idris
+#+begin_src emacs-lisp
+(require 'idris-mode) 
+#+end_src  
+** elisp
+#+begin_src emacs-lisp
+     (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+     (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+#+end_src
+** proof-general
+#+begin_src emacs-lisp
+;(setq proof-splash-enable nil)
+#+end_src
+* directories
+some directores I open all the time, make a quick way to get a dired
+buffer open at the top level of a few projects
+#+begin_src emacs-lisp
+(defun datacontracts ()
+  (interactive)
+  (find-file "~/devel/datacontracts"))
+
+(defun veggr ()
+  (interactive)
+  (find-file "~/devel/veggr"))
+
+(defun wordnik-utils ()
+  (interactive)
+  (find-file "~/devel/wordnik-utils"))
+
+(defun wordnik-sbt-utils ()
+  (interactive)
+  (find-file "~/devel/wordnik-sbt-utils"))
+
+(defun bifrost ()
+  (interactive)
+  (find-file "~/devel/bifrost"))
+
+(defun fulla ()
+  (interactive)
+  (find-file "~/devel/fulla"))
+
+(defun scalaz ()
+  (interactive)
+  (find-file "~/devel/scalaz/core/src/main/scala/scalaz"))
+#+end_src
+* third-party
+* yasnippet
+#+begin_src emacs-lisp
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"))
+
+(yas-global-mode 1)
+
+#+end_src
+* notmuch
+#+begin_src emacs-lisp
+(require 'cl)
+(require 'notmuch)
+(require 'notmuch-labeler)
+(defun notmuch-search-toggle-delete ()
+  "Return a function that toggles TAG on the current item."
+  (lambda ()
+    (interactive)
+    (if (member "delete" (notmuch-search-get-tags))
+        (notmuch-search-tag (list (concat "-" "delete") "+inbox"))
+      (notmuch-search-tag (list (concat "+" "delete") "-inbox" "-unread")))
+(next-line)
+))
+
+(define-key notmuch-search-mode-map "d"
+  (notmuch-search-toggle-delete))
+
+(require 'notmuch-address)
+(setq notmuch-address-command "~/src/vala-notmuch/addrlookup")
+(notmuch-address-message-insinuate)
+(setq gnus-inhibit-images nil)
+(require 'gnus-art)
+#+end_src
+* erc
+#+begin_src emacs-lisp
+;(setq erc-server-auto-reconnect t)
+(setq erc-colors-list '("green" "blue" "red"
+			"dark orange" "white"
+			"dark magenta" "maroon"
+			"indian red" "forest green"
+			"midnight blue" "dark violet"))
+;; special colors for some people
+(setq erc-nick-color-alist '(("John" . "blue")
+			     ("Bob" . "red")
+			     ))
+
+(defun erc-get-color-for-nick (nick)
+  "Gets a color for NICK. If NICK is in erc-nick-color-alist, use that color, else hash the nick and use a random color from the pool"
+  (or (cdr (assoc nick erc-nick-color-alist))
+      (nth
+       (mod (string-to-number
+	     (substring (md5 (downcase nick)) 0 6) 16)
+	    (length erc-colors-list))
+       erc-colors-list)))
+
+(defun erc-put-color-on-nick ()
+  "Modifies the color of nicks according to erc-get-color-for-nick"
+  (save-excursion
+    (goto-char (point-min))
+    (while (forward-word 1)
+      (setq bounds (bounds-of-thing-at-point 'word))
+      (setq word (buffer-substring-no-properties
+                  (car bounds) (cdr bounds)))
+      (when (or (and (erc-server-buffer-p) (erc-get-server-user word))
+                (and erc-channel-users (erc-get-channel-user word)))
+        (put-text-property (car bounds) (cdr bounds) 
+                           'face (cons 'foreground-color
+                                       (erc-get-color-for-nick word)))))))
+
+(add-hook 'erc-insert-modify-hook 'erc-put-color-on-nick)
+
+  (defvar erc-channels-to-visit nil
+    "Channels that have not yet been visited by erc-next-channel-buffer")
+  (defun erc-next-channel-buffer ()
+    "Switch to the next unvisited channel. See erc-channels-to-visit"
+    (interactive)
+    (when (null erc-channels-to-visit)
+      (setq erc-channels-to-visit 
+	    (remove (current-buffer) (erc-channel-list nil))))
+    (let ((target (pop erc-channels-to-visit)))
+      (if target 
+	  (switch-to-buffer target))))
+
+;(global-set-key (kbd "C-c a") `erc-next-channel-buffer)
+(setq erc-hide-list '("JOIN" "PART" "QUIT"))
+#+end_src
+** znc
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/ZNC.el")
+(require 'znc)
+#+end_src
+* tags
+** find-next-tag
+#+begin_src emacs-lisp
+(defun find-next-tag ()
+  (interactive)
+  (find-tag "" t))
+#+end_src
+** load-tags-for-this-project
+#+begin_src emacs-lisp
+
+(defun load-tags-for-this-project ()
+(interactive)
+(let ((my-tags-file (find-file-upwards "TAGS")))
+  (when my-tags-file
+    (message "Loading tags file: %s" my-tags-file)
+    (visit-tags-table my-tags-file))))
+    
+#+end_src
+** list-tags-for-this-file
+#+begin_src emacs-lisp
+(defun list-tags-for-this-file ()
+(interactive)
+(list-tags buffer-file-name))
+#+end_src
+** keybindings
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-M-t") 'find-tag)
+(global-set-key (kbd "C-M-,") 'pop-tag-mark)
+(global-set-key (kbd "C-M-.") 'find-next-tag)
+(global-set-key (kbd "M-?") 'complete-tag)
+(global-set-key (kbd "s-t") 'list-tags-for-this-file)
+#+end_src
+* misc
+** find-file-upwards
+#+begin_src emacs-lisp
+(defun find-file-upwards (file-to-find)
+  "Recursively searches each parent directory starting from the default-directory.
+looking for a file with name file-to-find.  Returns the path to it
+or nil if not found."
+  (labels
+      ((find-file-r (path)
+                    (let* ((parent (file-name-directory path))
+                           (possible-file (concat parent file-to-find)))
+                      (cond
+                       ((file-exists-p possible-file) possible-file) ; Found
+                       ;; The parent of ~ is nil and the parent of / is itself.
+                       ;; Thus the terminating condition for not finding the file
+                       ;; accounts for both.
+                       ((or (null parent) (equal parent (directory-file-name parent))) nil) ; Not found
+                       (t (find-file-r (directory-file-name parent))))))) ; Continue
+    (find-file-r default-directory)))
+
+(defun find-containing-dir-upwards (file-to-find)
+  "Recursively searches each parent directory starting from the default-directory.
+looking for a file with name file-to-find.  Returns the path to it
+or nil if not found."
+  (labels
+      ((find-file-r (path)
+                    (let* ((parent (file-name-directory path))
+                           (possible-file (concat parent file-to-find)))
+                      (cond
+                       ((file-exists-p possible-file) parent) ; Found
+                       ;; The parent of ~ is nil and the parent of / is itself.
+                       ;; Thus the terminating condition for not finding the file
+                       ;; accounts for both.
+                       ((or (null parent) (equal parent (directory-file-name parent))) nil) ; Not found
+                       (t (find-file-r (directory-file-name parent))))))) ; Continue
+    (find-file-r default-directory)))
+
+#+end_src
+** scratch
+Add an easy way to jump to the scratch buffer, or create a new one if
+it doesn't exist
+#+begin_src emacs-lisp
+(defun scratch()
+  (interactive)
+  (switch-to-buffer "*scratch*")
+  (lisp-interaction-mode))
+#+end_src
+
+skip straight to the scratch buffer during startup
+#+begin_src emacs-lisp
+(setq inhibit-startup-screen t)
+(setq initial-scratch-message nil)
+#+end_src
+** die
+C-x C-c is way too easy to hit accidentally, so I unset this and add
+something easy to M-x
+#+begin_src emacs-lisp
+(global-unset-key "\C-x\C-c")
+(global-unset-key "\C-x\C-z")
+(global-unset-key "\C-z")
+(defun die ()
+  (interactive)
+  (save-buffers-kill-emacs))
+#+end_src
+** custom variables						   :noexport:
+#+begin_src emacs-lisp
+(setq-default indent-tabs-mode nil)
+(custom-set-variables
+ '(exec-path (quote ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
+ '(indent-tabs-mode nil)
+ '(split-width-threshold 200)
+ '(starttls-extra-arguments (quote ("--insecure")))
+)
+#+end_src
+#+begin_src emacs-lisp
+(setq-default display-buffer-reuse-frames t)
+#+end_src
+
+** emacs server
+#+begin_src emacs-lisp
+(server-start)
+#+end_src
+** stews-counter
+This allows me to get incrementing numbers in subsequent invocations
+of a macro.  I believe that since I created this, something similar
+was added to emacs.
+#+begin_src emacs-lisp
+(require 'stewscounter)
+#+end_src
+** rotate-split
+*** TODO I should bring this back inline
+#+begin_src emacs-lisp
+(require 'rotatesplit)
+#+end_src
+** paren-match
+#+begin_src emacs-lisp
+(defun paren-match ()
+  "Jumps to the paren matching the one under point,
+and does nothing if there isn't one."
+  (interactive)
+  (cond
+   ((looking-at "[({[]") (forward-sexp 1) (backward-char))
+   ((looking-at "[]})]") (forward-char) (backward-sexp 1))
+   ((looking-at "[]})].") (forward-char) (backward-sexp 1))
+   (t    
+    (backward-char)
+    (cond
+     ((looking-at "[({[]") (forward-sexp 1) (backward-char))
+     ((looking-at "[]})]") (forward-char) (backward-sexp 1))
+     ((looking-at "[]})].") (forward-char) (backward-sexp 1))
+     (t (message "Could not find matching paren."))))))
+#+end_src
+** unfill-paragraph						      :drill:
+   :PROPERTIES:
+   :ID:       62679CEB-E521-4D31-8278-4754465BF480
+   :END:
+#+begin_src emacs-lisp
+    ;;; Stefan Monnier <foo at acm.org>. It is the opposite of fill-paragraph    
+    (defun unfill-paragraph ()
+      "Takes a multi-line paragraph and makes it into a single line of text."
+      (interactive)
+      (let ((fill-column (point-max)))
+        (fill-paragraph nil)))
+    ;; Handy key definition
+    (define-key global-map "\M-Q" 'unfill-paragraph)
+#+end_src
+** open this file
+#+begin_src emacs-lisp
+(defun stew.el () (interactive) (find-file "~/.emacs.d/Stew.org"))
+#+end_src
+

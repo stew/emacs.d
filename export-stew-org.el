@@ -1,0 +1,13 @@
+(progn
+  (require 'package)
+  (package-initialize)
+  (custom-set-faces)
+  (global-font-lock-mode t)
+  (require 'ob-tangle)
+  (require 'org)
+  (require 'htmlize)
+  (setq org-src-fontify-natively t)
+  (find-file "~/.emacs.d/Stew.org")
+  (org-html-export-as-html)
+  (switch-to-buffer "*Org HTML Export*")
+  (write-file "~/public_html/underlay/dotemacs.html"))

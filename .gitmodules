@@ -1,0 +1,12 @@
+[submodule "git-link"]
+	path = git-link
+	url = https://github.com/sshaw/git-link.git
+[submodule "nyan-mode"]
+	path = nyan-mode
+	url = https://github.com/TeMPOraL/nyan-mode.git
+[submodule "org-jira"]
+	path = org-jira
+	url = git://github.com/baohaojun/org-jira.git
+[submodule "scala-mode2"]
+	path = scala-mode2
+	url = git://github.com/hvesalai/scala-mode2.git

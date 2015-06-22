@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# name: skeleton sbt file
+# key: sbt
+# --
+name := "$1"
+
+scalaVersion := "2.11.2"
+
+scalacOptions := Seq(
+  "-deprecation",
+  "-encoding", "utf8",
+  "-language:postfixOps",
+  "-language:higherKinds",
+  "-target:jvm-1.7",
+  "-unchecked",
+  "-Xcheckinit",
+  "-Xfuture",
+  "-Xlint",
+  "-Xfatal-warnings",
+  "-Yno-adapted-args",
+  "-Ywarn-dead-code",
+  "-Ywarn-value-discard")
+
+libraryDependencies ++= Seq(
+  "org.scalacheck" %% "scalacheck"           % "1.11.6" % "test",
+  "org.typelevel"  %% "shapeless-scalacheck" % "0.4-SNAPSHOT")

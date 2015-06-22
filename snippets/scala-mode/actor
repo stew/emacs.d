@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: class foo extends Actor
+# key: actor
+# --
+class $1 extends Actor {
+  ${2:override def preStart(): Unit = {
+    $3
+  }}
+
+  def receive: Receive = {
+    case $4 ⇒ $0
+  }
+}

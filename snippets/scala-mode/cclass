@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: case class Foo () extends Bar Wth Baz
+# key: cclass
+# --
+case class $1($0) ${2:extends $3${4:with $5}}

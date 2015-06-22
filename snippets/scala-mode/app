@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: scala application
+# key: app
+# --
+package `(scala-package-name-from-buffer)`
+
+object $1 extends App {
+  override def main(argv: Array[String]) {
+    $0
+  }
+}

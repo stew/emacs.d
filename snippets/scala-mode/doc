@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name : /** method name */
+# key: doc
+# --
+/**
+ * `(scala-mode-def-and-args-doc)` -- $0
+ */
