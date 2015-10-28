@@ -64,9 +64,5 @@
  '(split-width-threshold 200)
  '(starttls-extra-arguments (quote ("--insecure")))
  '(tool-bar-mode nil)
- '(znc-servers
-   (quote
-    (("loach.vireo.org" 9999 t
-      ((chat\.freenode\.net "stew" "bianchirb1")))))))
 (put 'narrow-to-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
