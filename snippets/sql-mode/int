@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: foo INTEGER NOT NULL
+# key: int
+# --
+$1 INTEGER${3: NOT NULL},
+$0

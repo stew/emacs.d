@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: CREATE TABLE with primary key
+# key: ct
+# --
+CREATE TABLE PUBLIC.$1 (
+    id IDENTITY(0) NOT NULL,
+    $0,
+    CONSTRAINT $1_pk PRIMARY KEY (id)
+);
+

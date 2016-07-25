@@ -1,0 +1,63 @@
+
+;; ----- smex-history -----
+(
+ die
+ notmuch
+ magit-blame
+ find-dired
+ revert-buffer
+ ensime
+ magit-blame-mode
+)
+
+;; ----- smex-data -----
+(
+ (menu-bar-mode . 2)
+ (replace-string . 44)
+ (die . 8)
+ (scratch . 14)
+ (sort-lines . 2)
+ (recover-this-file . 7)
+ (make-directory . 4)
+ (eshell . 5)
+ (package-install . 4)
+ (markdown-mode . 1)
+ (replace-regexp . 4)
+ (json-mode . 1)
+ (package-show-package-list . 1)
+ (stew\.el . 6)
+ (gnus-summary-limit-to-bodies . 2)
+ (conf-mode . 1)
+ (notmuch . 29)
+ (sh-mode . 2)
+ (hcl-mode . 1)
+ (server-force-delete . 1)
+ (ensime . 41)
+ (ensime-shutdown . 4)
+ (set-face-background-pixmap . 1)
+ (yas-minor-mode . 4)
+ (scalaz . 20)
+ (sgml-name-8bit-mode . 1)
+ (base64-decode-region . 1)
+ (article-unsplit-urls . 2)
+ (magit-blame . 7)
+ (eval-expression . 1)
+ (artist-mode . 3)
+ (fundamental-mode . 1)
+ (gnus-article-capitalize-sentences . 1)
+ (auto-fill-mode . 1)
+ (flyspell-mode . 2)
+ (shell-command-on-region . 1)
+ (yas-expand . 1)
+ (make-scala-project-dirs . 4)
+ (5x5-crack-xor-mutate . 1)
+ (ensime-reload . 3)
+ (footnote-mode . 2)
+ (article-date-lapsed . 1)
+ (magit-blame-mode . 2)
+ (json-mode-beautify . 2)
+ (ansible::decrypt-buffer . 3)
+ (customize-apropos . 1)
+ (find-dired . 5)
+ (revert-buffer . 2)
+)

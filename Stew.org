@@ -91,9 +91,27 @@ when I create a third column, make them all 1/3 size
 ** helm								      :drill:
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-x") 'helm-M-x)
-;;(global-set-key (kbd "C-x C-f") 'ido-find-file)
 (global-set-key (kbd "C-x g") 'helm-do-grep)
 (setq helm-grep-default-command "/usr/local/bin/ggrep")
+
+(global-set-key (kbd "C-c g") 'helm-git-grep)
+(define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
+
+(setq helm-M-x-fuzzy-match t) ;; optional fuzzy matching for helm-M-x
+
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+; I waffle on which of these I want to use
+; currently using helm becuse:
+;  - It helps with tramp
+;  - I'm not ready to lose tab completion
+(global-set-key (kbd "C-x C-f") 'ido-find-file)
+;(global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+
+(global-set-key (kbd "C-x g") 'helm-do-grep)
+(global-set-key (kbd "C-x b") 'helm-mini)
+
 #+end_src
 ** projectile
 http://wikemacs.org/index.php/Projectile
@@ -115,9 +133,9 @@ buffers and more. Can't imagine live without it once you get used to
 it.  
 
 #+begin_src emacs-lisp
-(ido-mode t)
-(setq ido-auto-merge-delay-time 2)
-(setq ido-everywhere t)
+;(ido-mode t)
+;(setq ido-auto-merge-delay-time 2)
+;(setq ido-everywhere t)
 #+end_src
 
 - hit C-f to go back to a "normal" prompt
@@ -159,9 +177,9 @@ http://www.emacswiki.org/emacs/Smex
 
 M-x enhancement.
 #+begin_src emacs-lisp
-(require `smex)
-(global-set-key (kbd "M-x") `smex)
-(global-set-key (kbd "M-X") `smex-major-mode-commands)
+;(require `smex)
+;(global-set-key (kbd "M-x") `smex)
+;(global-set-key (kbd "M-X") `smex-major-mode-commands)
 #+end_src
 ** ace jump
 http://www.emacswiki.org/emacs/AceJump
@@ -261,6 +279,50 @@ function to two keys hit in rapid succession
 #+begin_src emacs-lisp
  (setq mark-holidays-in-calendar t)
 #+end_src
+** column highlight
+#+begin_src emacs-lisp
+(require `col-highlight)
+(global-set-key (kbd "C-|") `flash-column-highlight)
+(toggle-highlight-column-when-idle 1)
+#+end_src
+** jmh
+#+begin_src emacs-lisp
+  ; strip spaces
+  (defun strip-spaces (x) (replace-regexp-in-string "\s" "" x))
+  ; takes something like "11234 ± 234" and replaces 234 with a
+  ; percentage with 3 digits
+  (defun plus-minus-to-pct (str)
+    (let*
+        (
+         (spl (mapcar 'strip-spaces (split-string str "±")))
+         (x (string-to-number (car spl)))
+         (y (string-to-number (cadr spl)))
+         (pct (/ (floor (* (/ y (float x)) 1000)) 10.0)))
+      (concat (number-to-string pct) "%")))
+
+  ; turn something like 1234567 into 1.2M 
+  (defun prettynumber (str)
+    (let*
+        ((num (string-to-number str)))
+      (cond
+       ((> num 999999) (concat (number-to-string (/ (floor (/ num 100000.0)) 10.0)) "M"))
+       ((> num 999) (concat (number-to-string (/ (floor (/ num 100.0)) 10.0)) "K"))
+       (t (number-to-string  num)))))
+
+  ; try to turn the word at the point into a pretty number using the
+  ; above function
+  (defun pretty-next-number ()
+    (interactive)
+    (let*
+        ((bounds (bounds-of-thing-at-point 'symbol))
+         (pos1 (car bounds))
+         (pos2 (cdr bounds))
+         (mything (buffer-substring-no-properties pos1 pos2))
+         (pretty (prettynumber mything)))
+      (delete-region pos1 pos2)
+      (insert pretty)))
+#+end_src
+
 * keybindings
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-SPC") 'cycle-spacing)
@@ -295,6 +357,60 @@ function to two keys hit in rapid succession
 (define-key 'iso-transl-ctl-x-8-map "t" [?⊤])
 (define-key 'iso-transl-ctl-x-8-map "f" [?⊥])
 #+end_src
+
+This lets me navigate both backwards and forwards in a compilation / grep results window
+
+#+begin_src emacs-lisp
+(defun prev-error ()
+  (interactive)
+  (next-error -1))
+
+(defun reset-error ()
+  (interactive)
+  (next-error 1 1))
+
+(defhydra hydra-next-error ()
+  "next-error"
+  ("." next-error "next")
+  ("," prev-error "prev")
+  ("/" reset-error "reset")
+  ("q" nil "quit"))
+
+(global-set-key (kbd "C-x ~") 'hydra-next-error/body)
+#+end_src
+
+rectangular mark mode using hydra. This one came directly from the hydra examples
+
+#+begin_src emacs-lisp 
+(defhydra hydra-rectangle (:body-pre (rectangle-mark-mode 1)
+                           :color pink
+                           :post (deactivate-mark))
+  "
+  ^_k_^     _d_elete    _s_tring
+_h_   _l_   _o_k        _y_ank
+  ^_j_^     _n_ew-copy  _r_eset
+^^^^        _e_xchange  _u_ndo
+^^^^        ^ ^         _p_aste
+"
+  ("h" backward-char nil)
+  ("l" forward-char nil)
+  ("k" previous-line nil)
+  ("j" next-line nil)
+  ("e" hydra-ex-point-mark nil)
+  ("n" copy-rectangle-as-kill nil)
+  ("d" delete-rectangle nil)
+  ("r" (if (region-active-p)
+           (deactivate-mark)
+         (rectangle-mark-mode 1)) nil)
+  ("y" yank-rectangle nil)
+  ("u" undo nil)
+  ("s" string-rectangle nil)
+  ("p" kill-rectangle nil)
+  ("o" nil nil))
+
+(global-set-key (kbd "C-x SPC") 'hydra-rectangle/body)
+#+end_src
+
 * modes
 ** scala
 *** scala2-mode
@@ -305,6 +421,7 @@ directly.
 (require 'scala-mode2)
 (setq scala-indent:align-parameters t)
 (setq scala-indent:use-javadoc-style t)
+(setq col-highlight-set-interval 1)
 #+end_src
 *** ensime
 #+begin_src emacs-lisp
@@ -315,7 +432,7 @@ directly.
 ;(setq ensime-default-server-host "localhost")
 ;(setq ensime-graphical-tooltips nil)
 ;(setq ensime-tooltip-type-hints t)
-(setq ensime-sbt-command "~/bin/sbt")
+(setq ensime-sbt-command "/home/stew/bin/sbt")
 
 (defun killall-java ()
   (interactive)
@@ -615,15 +732,15 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 #+end_src
 ** org-mode
 #+begin_src emacs-lisp
-(setq org-agenda-files (quote ("~/org/todo.org" "~/org/reverb.org")))
-(setq org-journal-dir "~/org/journal")
+(setq org-agenda-files (quote ("~/Dropbox/org/todo.org" "~/Dropbox/org/verizon.org")))
+(setq org-journal-dir "~/Dropbox/aorg/journal")
 
 (require 'org-protocol)
 
 (defun find-todo-org-file ()
   "open my todo.org feil"
   (interactive)
-  (find-file "~/org/todo.org")
+  (find-file "~/Dropbox/org/todo.org")
   )
 
 (load-library "ox-md")
@@ -640,15 +757,14 @@ Org-mobile setup:
 
 #+begin_src emacs-lisp
 ;; Set to the location of your Org files on your local system
-(setq org-directory "~/org")
+(setq org-directory "~/Dropbox/org")
 ;; Set to the name of the file where new notes will be stored
-(setq org-mobile-inbox-for-pull "~/org/flagged.org")
+(setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
 ;; Set to <your Dropbox root directory>/MobileOrg.
 (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
 (global-set-key (kbd "C-c a") `org-agenda)
 #+end_src
-
 
 ** idris
 #+begin_src emacs-lisp
@@ -663,6 +779,32 @@ Org-mobile setup:
 #+begin_src emacs-lisp
 ;(setq proof-splash-enable nil)
 #+end_src
+** hcl
+#+begin_src emacs-lisp
+   (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
+#+end_src
+
+** ibuffer
+#+begin_src emacs-lisp
+
+(defun ibuffer-ido-find-file (file &optional wildcards)
+  "Like `ido-find-file', but default to the directory of the buffer at point."
+  (interactive
+   (let ((default-directory
+           (let ((buf (ibuffer-current-buffer)))
+             (if (buffer-live-p buf)
+                 (with-current-buffer buf
+                   default-directory)
+               default-directory))))
+     (list (ido-read-file-name "Find file: " default-directory) t)))
+  (find-file file wildcards))
+
+(add-hook 'ibuffer-mode-hook
+          (lambda ()
+            (define-key ibuffer-mode-map "\C-x\C-f"
+              'ibuffer-ido-find-file)))
+#+end_src
+
 * directories
 some directores I open all the time, make a quick way to get a dired
 buffer open at the top level of a few projects
@@ -694,14 +836,16 @@ buffer open at the top level of a few projects
 (defun scalaz ()
   (interactive)
   (find-file "~/devel/scalaz/core/src/main/scala/scalaz"))
+
+(defun cats ()
+  (interactive)
+  (find-file "~/devel/cats/core/src/main/scala/cats"))
 #+end_src
 * third-party
 * yasnippet
 #+begin_src emacs-lisp
 (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"))
-
-(yas-global-mode 1)
 
 #+end_src
 * notmuch

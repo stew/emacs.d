@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: type lambda
+# key: lam
+# --
+({type λ[α] = $1[$2,α]})#λ$0

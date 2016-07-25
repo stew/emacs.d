@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: name VARCHAR(64) NOT NULL
+# key: vc
+# --
+$1 VARCHAR($2)${3: NOT NULL},
+$0
