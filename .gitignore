@@ -12,3 +12,5 @@
 /games/
 /elpa/
 ido.last
+session.*
+tramp

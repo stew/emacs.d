@@ -90,10 +90,31 @@ when I create a third column, make them all 1/3 size
 * widgets
 ** helm								      :drill:
 #+begin_src emacs-lisp
-(global-set-key (kbd "M-x") 'helm-M-x)
-;;(global-set-key (kbd "C-x C-f") 'ido-find-file)
+;(global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-x g") 'helm-do-grep)
 (setq helm-grep-default-command "/usr/local/bin/ggrep")
+<<<<<<< variant A
+>>>>>>> variant B
+
+(global-set-key (kbd "C-c g") 'helm-git-grep)
+(define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
+
+(setq helm-M-x-fuzzy-match t) ;; optional fuzzy matching for helm-M-x
+
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+; I waffle on which of these I want to use
+; currently using helm becuse:
+;  - It helps with tramp
+;  - I'm not ready to lose tab completion
+(global-set-key (kbd "C-x C-f") 'ido-find-file)
+;(global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+
+(global-set-key (kbd "C-x g") 'helm-do-grep)
+(global-set-key (kbd "C-x b") 'helm-mini)
+
+======= end
 #+end_src
 ** projectile
 http://wikemacs.org/index.php/Projectile
@@ -115,9 +136,15 @@ buffers and more. Can't imagine live without it once you get used to
 it.  
 
 #+begin_src emacs-lisp
+<<<<<<< variant A
 (ido-mode t)
 (setq ido-auto-merge-delay-time 2)
 (setq ido-everywhere t)
+>>>>>>> variant B
+;(ido-mode t)
+;(setq ido-auto-merge-delay-time 2)
+;(setq ido-everywhere t)
+======= end
 #+end_src
 
 - hit C-f to go back to a "normal" prompt
@@ -159,7 +186,11 @@ http://www.emacswiki.org/emacs/Smex
 
 M-x enhancement.
 #+begin_src emacs-lisp
+<<<<<<< variant A
 (require `smex)
+>>>>>>> variant B
+;(require `smex)
+======= end
 (global-set-key (kbd "M-x") `smex)
 (global-set-key (kbd "M-X") `smex-major-mode-commands)
 #+end_src
@@ -261,6 +292,50 @@ function to two keys hit in rapid succession
 #+begin_src emacs-lisp
  (setq mark-holidays-in-calendar t)
 #+end_src
+** column highlight
+#+begin_src emacs-lisp
+(require `col-highlight)
+(global-set-key (kbd "C-|") `flash-column-highlight)
+(toggle-highlight-column-when-idle 1)
+#+end_src
+** jmh
+#+begin_src emacs-lisp
+  ; strip spaces
+  (defun strip-spaces (x) (replace-regexp-in-string "\s" "" x))
+  ; takes something like "11234 ± 234" and replaces 234 with a
+  ; percentage with 3 digits
+  (defun plus-minus-to-pct (str)
+    (let*
+        (
+         (spl (mapcar 'strip-spaces (split-string str "±")))
+         (x (string-to-number (car spl)))
+         (y (string-to-number (cadr spl)))
+         (pct (/ (floor (* (/ y (float x)) 1000)) 10.0)))
+      (concat (number-to-string pct) "%")))
+
+  ; turn something like 1234567 into 1.2M 
+  (defun prettynumber (str)
+    (let*
+        ((num (string-to-number str)))
+      (cond
+       ((> num 999999) (concat (number-to-string (/ (floor (/ num 100000.0)) 10.0)) "M"))
+       ((> num 999) (concat (number-to-string (/ (floor (/ num 100.0)) 10.0)) "K"))
+       (t (number-to-string  num)))))
+
+  ; try to turn the word at the point into a pretty number using the
+  ; above function
+  (defun pretty-next-number ()
+    (interactive)
+    (let*
+        ((bounds (bounds-of-thing-at-point 'symbol))
+         (pos1 (car bounds))
+         (pos2 (cdr bounds))
+         (mything (buffer-substring-no-properties pos1 pos2))
+         (pretty (prettynumber mything)))
+      (delete-region pos1 pos2)
+      (insert pretty)))
+#+end_src
+
 * keybindings
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-SPC") 'cycle-spacing)
@@ -294,7 +369,63 @@ function to two keys hit in rapid succession
 (define-key 'iso-transl-ctl-x-8-map "," [?←])
 (define-key 'iso-transl-ctl-x-8-map "t" [?⊤])
 (define-key 'iso-transl-ctl-x-8-map "f" [?⊥])
+
+
 #+end_src
+
+This lets me navigate both backwards and forwards in a compilation / grep results window
+
+#+begin_src emacs-lisp
+(defun prev-error ()
+  (interactive)
+  (next-error -1))
+
+(defun reset-error ()
+  (interactive)
+  (next-error 1 1))
+
+(defhydra hydra-next-error ()
+  "next-error"
+  ("." next-error "next")
+  ("," prev-error "prev")
+  ("/" reset-error "reset")
+  ("q" nil "quit"))
+
+(global-set-key (kbd "C-x ~") 'hydra-next-error/body)
+#+end_src
+
+rectangular mark mode using hydra. This one came directly from the hydra examples
+
+#+begin_src emacs-lisp 
+(defhydra hydra-rectangle (:body-pre (rectangle-mark-mode 1)
+                           :color pink
+                           :post (deactivate-mark))
+  "
+  ^_k_^     _d_elete    _s_tring
+_h_   _l_   _o_k        _y_ank
+  ^_j_^     _n_ew-copy  _r_eset
+^^^^        _e_xchange  _u_ndo
+^^^^        ^ ^         _p_aste
+"
+  ("h" backward-char nil)
+  ("l" forward-char nil)
+  ("k" previous-line nil)
+  ("j" next-line nil)
+  ("e" hydra-ex-point-mark nil)
+  ("n" copy-rectangle-as-kill nil)
+  ("d" delete-rectangle nil)
+  ("r" (if (region-active-p)
+           (deactivate-mark)
+         (rectangle-mark-mode 1)) nil)
+  ("y" yank-rectangle nil)
+  ("u" undo nil)
+  ("s" string-rectangle nil)
+  ("p" kill-rectangle nil)
+  ("o" nil nil))
+
+(global-set-key (kbd "C-x SPC") 'hydra-rectangle/body)
+#+end_src
+
 * modes
 ** scala
 *** scala2-mode
@@ -305,17 +436,19 @@ directly.
 (require 'scala-mode2)
 (setq scala-indent:align-parameters t)
 (setq scala-indent:use-javadoc-style t)
+(setq col-highlight-set-interval 1)
 #+end_src
 *** ensime
 #+begin_src emacs-lisp
 ;(add-to-list 'load-path "~/.emacs.d/ensime")
 (require 'ensime)
+(setq ensime-startup-snapshot-notification nil)
 ;(setq ensime-default-server-cmd "bin/server")
 ;(setq ensime-default-server-cmd "bin/server")
 ;(setq ensime-default-server-host "localhost")
 ;(setq ensime-graphical-tooltips nil)
 ;(setq ensime-tooltip-type-hints t)
-(setq ensime-sbt-command "~/bin/sbt")
+(setq ensime-sbt-command "/home/stew/bin/sbt")
 
 (defun killall-java ()
   (interactive)
@@ -426,6 +559,13 @@ I use this in yasnippets to automatically calculate a package name
 	     (local-set-key (kbd "C-c i") `yas-insert-snippet)))
 #+end_src
 
+**** yas-global
+#+begin_src emacs-lisp
+(require `yasnippet)
+(yas-global-mode 1)
+
+#+end_src
+
 *** visit-spec
 This tries to find where the Spec/test of the current buffer lives,
 and either creates it, or visits it
@@ -474,18 +614,36 @@ and either creates it, or visits it
 #+end_src
 *** create project structure
 #+begin_src emacs-lisp
+(defvar sbt-version "0.13.12"
+   "sbt version to use when creating new projects")
+
+(defvar scala-version "2.11.8"
+   "scala version to use when creating new projects")
+
+(defun build.properties ()
+  (concat "sbt.version=" sbt-version "\n"))
+
+(defun make-build-properties (fn)
+  (with-temp-buffer
+	(insert (build.properties))
+	(write-region (point-min) (point-max) fn t)))
+
 (defun make-scala-project-dirs ()
   (interactive)
   (let ((dn (find-containing-dir-upwards "build.sbt")))
     (if dn
       (if (y-or-n-p (concat "generate directory structure for project: " dn))
 	  (let* ((src (concat dn "/src"))
+         (project (concat dn "/project"))
+         (buildprop (concat project "/build.properties"))
 		 (main (concat src "/main"))
 		 (test (concat src "/test"))
 		 (mainscala (concat main "/scala"))
 		 (testscala (concat test "/scala")))
-	    
+
 	    (mkdir src t)
+	    (mkdir project t)
+		(make-build-properties buildprop)
 	    (mkdir main t)
 	    (mkdir test t)
 	    (mkdir mainscala t)
@@ -598,6 +756,27 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
   (local-set-key (kbd "s-t") `transpose-args)))
 
 #+end_src
+** go
+#+begin_src emacs-lisp
+(defun go-mode-setup ()
+  (go-eldoc-setup)
+  (setq compile-command "go build -v && go test -v && go vet && golint && errcheck")
+  (define-key (current-local-map) "\C-c\C-c" 'compile)
+  (setq gofmt-command "goimports")
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (local-set-key (kbd "M-.") 'godef-jump))
+
+(add-hook 'go-mode-hook 'go-mode-setup)
+
+(ac-config-default)
+(require 'auto-complete-config)
+(require 'go-autocomplete)
+
+
+(add-to-list 'load-path (concat (getenv "GOPATH")  "/src/github.com/golang/lint/misc/emacs"))
+(require 'golint)
+
+#+end_src
 ** javascript
 #+begin_src emacs-lisp
 (setq js-indent-level 2)
@@ -615,15 +794,15 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 #+end_src
 ** org-mode
 #+begin_src emacs-lisp
-(setq org-agenda-files (quote ("~/org/todo.org" "~/org/reverb.org")))
-(setq org-journal-dir "~/org/journal")
+(setq org-agenda-files (quote ("~/Dropbox/org/verizon.org" "~/Dropbox/org/misc.org")))
+(setq org-journal-dir "~/Dropbox/aorg/journal")
 
 (require 'org-protocol)
 
 (defun find-todo-org-file ()
   "open my todo.org feil"
   (interactive)
-  (find-file "~/org/todo.org")
+  (find-file "~/Dropbox/org/todo.org")
   )
 
 (load-library "ox-md")
@@ -631,7 +810,6 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 (setq org-src-fontify-natively t)
 (setq org-default-notes-file (concat org-directory "/todo.org"))
 (define-key global-map "\C-cc" 'org-capture)
-(require 'org-mac-protocol)
 
 
 #+end_src
@@ -640,15 +818,14 @@ Org-mobile setup:
 
 #+begin_src emacs-lisp
 ;; Set to the location of your Org files on your local system
-(setq org-directory "~/org")
+(setq org-directory "~/Dropbox/org")
 ;; Set to the name of the file where new notes will be stored
-(setq org-mobile-inbox-for-pull "~/org/flagged.org")
+(setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
 ;; Set to <your Dropbox root directory>/MobileOrg.
 (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
 
 (global-set-key (kbd "C-c a") `org-agenda)
 #+end_src
-
 
 ** idris
 #+begin_src emacs-lisp
@@ -663,6 +840,11 @@ Org-mobile setup:
 #+begin_src emacs-lisp
 ;(setq proof-splash-enable nil)
 #+end_src
+** hcl
+#+begin_src emacs-lisp
+   (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
+#+end_src
+
 * directories
 some directores I open all the time, make a quick way to get a dired
 buffer open at the top level of a few projects
@@ -694,14 +876,16 @@ buffer open at the top level of a few projects
 (defun scalaz ()
   (interactive)
   (find-file "~/devel/scalaz/core/src/main/scala/scalaz"))
+
+(defun cats ()
+  (interactive)
+  (find-file "~/devel/cats/core/src/main/scala/cats"))
 #+end_src
 * third-party
 * yasnippet
 #+begin_src emacs-lisp
 (setq yas-snippet-dirs
       '("~/.emacs.d/snippets"))
-
-(yas-global-mode 1)
 
 #+end_src
 * notmuch
@@ -947,5 +1131,142 @@ and does nothing if there isn't one."
 ** open this file
 #+begin_src emacs-lisp
 (defun stew.el () (interactive) (find-file "~/.emacs.d/Stew.org"))
+(defun verizon.org () (interactive) (find-file "~/org/verizon.org"))
+(defun misc.org () (interactive) (find-file "~/org/misc.org"))
 #+end_src
 
+* fira
+#+begin_src emacs-lisp
+;;; Fira code
+;; This works when using emacs --daemon + emacsclient
+(add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
+;; This works when using emacs without server/client
+(set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
+;; I haven't found one statement that makes both of the above situations work, so I use both for now
+
+(defconst fira-code-font-lock-keywords-alist
+  (mapcar (lambda (regex-char-pair)
+            `(,(car regex-char-pair)
+              (0 (prog1 ()
+                   (compose-region (match-beginning 1)
+                                   (match-end 1)
+                                   ;; The first argument to concat is a string containing a literal tab
+                                   ,(concat "   " (list (decode-char 'ucs (cadr regex-char-pair)))))))))
+          '(("\\(www\\)"                   #Xe100)
+            ("[^/]\\(\\*\\*\\)[^/]"        #Xe101)
+            ("\\(\\*\\*\\*\\)"             #Xe102)
+            ("\\(\\*\\*/\\)"               #Xe103)
+            ("\\(\\*>\\)"                  #Xe104)
+            ("[^*]\\(\\*/\\)"              #Xe105)
+            ("\\(\\\\\\\\\\)"              #Xe106)
+            ("\\(\\\\\\\\\\\\\\)"          #Xe107)
+            ("\\({-\\)"                    #Xe108)
+            ("\\(\\[\\]\\)"                #Xe109)
+            ("\\(::\\)"                    #Xe10a)
+            ("\\(:::\\)"                   #Xe10b)
+            ("[^=]\\(:=\\)"                #Xe10c)
+            ("\\(!!\\)"                    #Xe10d)
+            ("\\(!=\\)"                    #Xe10e)
+            ("\\(!==\\)"                   #Xe10f)
+            ("\\(-}\\)"                    #Xe110)
+            ("\\(--\\)"                    #Xe111)
+            ("\\(---\\)"                   #Xe112)
+            ("\\(-->\\)"                   #Xe113)
+            ("[^-]\\(->\\)"                #Xe114)
+            ("\\(->>\\)"                   #Xe115)
+            ("\\(-<\\)"                    #Xe116)
+            ("\\(-<<\\)"                   #Xe117)
+            ("\\(-~\\)"                    #Xe118)
+            ("\\(#{\\)"                    #Xe119)
+            ("\\(#\\[\\)"                  #Xe11a)
+            ("\\(##\\)"                    #Xe11b)
+            ("\\(###\\)"                   #Xe11c)
+            ("\\(####\\)"                  #Xe11d)
+            ("\\(#(\\)"                    #Xe11e)
+            ("\\(#\\?\\)"                  #Xe11f)
+            ("\\(#_\\)"                    #Xe120)
+            ("\\(#_(\\)"                   #Xe121)
+            ("\\(\\.-\\)"                  #Xe122)
+            ("\\(\\.=\\)"                  #Xe123)
+            ("\\(\\.\\.\\)"                #Xe124)
+            ("\\(\\.\\.<\\)"               #Xe125)
+            ("\\(\\.\\.\\.\\)"             #Xe126)
+            ("\\(\\?=\\)"                  #Xe127)
+            ("\\(\\?\\?\\)"                #Xe128)
+            ("\\(;;\\)"                    #Xe129)
+            ("\\(/\\*\\)"                  #Xe12a)
+            ("\\(/\\*\\*\\)"               #Xe12b)
+            ("\\(/=\\)"                    #Xe12c)
+            ("\\(/==\\)"                   #Xe12d)
+            ("\\(/>\\)"                    #Xe12e)
+            ("\\(//\\)"                    #Xe12f)
+            ("\\(///\\)"                   #Xe130)
+            ("\\(&&\\)"                    #Xe131)
+            ("\\(||\\)"                    #Xe132)
+            ("\\(||=\\)"                   #Xe133)
+            ("[^|]\\(|=\\)"                #Xe134)
+            ("\\(|>\\)"                    #Xe135)
+            ("\\(\\^=\\)"                  #Xe136)
+            ("\\(\\$>\\)"                  #Xe137)
+            ("\\(\\+\\+\\)"                #Xe138)
+            ("\\(\\+\\+\\+\\)"             #Xe139)
+            ("\\(\\+>\\)"                  #Xe13a)
+            ("\\(=:=\\)"                   #Xe13b)
+            ("[^!/]\\(==\\)[^>]"           #Xe13c)
+            ("\\(===\\)"                   #Xe13d)
+            ("\\(==>\\)"                   #Xe13e)
+            ("[^=]\\(=>\\)"                #Xe13f)
+            ("\\(=>>\\)"                   #Xe140)
+            ("\\(<=\\)"                    #Xe141)
+            ("\\(=<<\\)"                   #Xe142)
+            ("\\(=/=\\)"                   #Xe143)
+            ("\\(>-\\)"                    #Xe144)
+            ("\\(>=\\)"                    #Xe145)
+            ("\\(>=>\\)"                   #Xe146)
+            ("[^-=]\\(>>\\)"               #Xe147)
+            ("\\(>>-\\)"                   #Xe148)
+            ("\\(>>=\\)"                   #Xe149)
+            ("\\(>>>\\)"                   #Xe14a)
+            ("\\(<\\*\\)"                  #Xe14b)
+            ("\\(<\\*>\\)"                 #Xe14c)
+            ("\\(<|\\)"                    #Xe14d)
+            ("\\(<|>\\)"                   #Xe14e)
+            ("\\(<\\$\\)"                  #Xe14f)
+            ("\\(<\\$>\\)"                 #Xe150)
+            ("\\(<!--\\)"                  #Xe151)
+            ("\\(<-\\)"                    #Xe152)
+            ("\\(<--\\)"                   #Xe153)
+            ("\\(<->\\)"                   #Xe154)
+            ("\\(<\\+\\)"                  #Xe155)
+            ("\\(<\\+>\\)"                 #Xe156)
+            ("\\(<=\\)"                    #Xe157)
+            ("\\(<==\\)"                   #Xe158)
+            ("\\(<=>\\)"                   #Xe159)
+            ("\\(<=<\\)"                   #Xe15a)
+            ("\\(<>\\)"                    #Xe15b)
+            ("[^-=]\\(<<\\)"               #Xe15c)
+            ("\\(<<-\\)"                   #Xe15d)
+            ("\\(<<=\\)"                   #Xe15e)
+            ("\\(<<<\\)"                   #Xe15f)
+            ("\\(<~\\)"                    #Xe160)
+            ("\\(<~~\\)"                   #Xe161)
+            ("\\(</\\)"                    #Xe162)
+            ("\\(</>\\)"                   #Xe163)
+            ("\\(~@\\)"                    #Xe164)
+            ("\\(~-\\)"                    #Xe165)
+            ("\\(~=\\)"                    #Xe166)
+            ("\\(~>\\)"                    #Xe167)
+            ("[^<]\\(~~\\)"                #Xe168)
+            ("\\(~~>\\)"                   #Xe169)
+            ("\\(%%\\)"                    #Xe16a)
+           ;; ("\\(x\\)"                   #Xe16b) This ended up being hard to do properly so i'm leaving it out.
+            ("[^:=]\\(:\\)[^:=]"           #Xe16c)
+            ("[^\\+<>]\\(\\+\\)[^\\+<>]"   #Xe16d)
+            ("[^\\*/<>]\\(\\*\\)[^\\*/<>]" #Xe16f))))
+
+(defun add-fira-code-symbol-keywords ()
+  (font-lock-add-keywords nil fira-code-font-lock-keywords-alist))
+
+(add-hook 'prog-mode-hook
+          #'add-fira-code-symbol-keywords)
+#+end_src emacs-lisp

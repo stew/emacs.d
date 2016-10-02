@@ -5,7 +5,7 @@
 
 
 ; list the packages you want
-(setq package-list '(projectile git-link smex multiple-cursors key-chord git-gutter scala-mode2 ensime idris-mode org-jira confluence notmuch notmuch-labeler znc magit))
+(setq package-list '(projectile git-link smex multiple-cursors key-chord git-gutter scala-mode2 ensime idris-mode org-jira confluence notmuch notmuch-labeler znc magit json-mode yaml-mode ace-jump-mode markdown-mode hydra))
 
 ; activate all the packages (in particular autoloads)
 (package-initialize)
@@ -27,46 +27,56 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-names-vector
+   ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
  '(column-number-mode t)
- '(erc-modules
+ '(custom-safe-themes
    (quote
-    (autojoin button completion fill irccontrols list match menu move-to-prompt netsplit networks noncommands notifications readonly ring stamp track)))
- '(erc-nick "stew")
- '(erc-port 9999)
- '(erc-server "loach.vireo.org")
- '(erc-track-exclude-types
-   (quote
-    ("JOIN" "KICK" "NICK" "PART" "QUIT" "MODE" "333" "353")))
+	("55d31108a7dc4a268a1432cd60a7558824223684afecefa6fae327212c40f8d3" default)))
+ '(ensime-graphical-tooltips t)
  '(exec-path
    (quote
-    ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
+	("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
+ '(grep-find-ignored-directories
+   (quote
+	("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ".ensime_cache")))
  '(haskell-font-lock-symbols t)
  '(haskell-mode-hook
    (quote
-    (turn-on-eldoc-mode turn-on-haskell-decl-scan turn-on-haskell-doc turn-on-haskell-indentation)))
+	(turn-on-eldoc-mode turn-on-haskell-decl-scan turn-on-haskell-doc turn-on-haskell-indentation)) t)
  '(idris-interpreter-path "/Users/stew/.cabal/bin/idris")
  '(indent-tabs-mode t)
+ '(line-move-visual nil)
+ '(menu-bar-mode nil)
+ '(nil nil t)
  '(notmuch-hello-thousands-separator ",")
  '(notmuch-saved-searches
    (quote
-    (("inbox" . "tag:inbox")
-     ("unread" . "tag:unread")
-     ("inbox+unread" . "tag:inbox and tag:unread")
-     ("cody" . "from:cody")
-     ("cody+unread" . "from:cody and tag:unread"))))
+	(("inbox" . "tag:inbox")
+	 ("unread" . "tag:unread")
+	 ("inbox+unread" . "tag:inbox and tag:unread")
+	 ("cody" . "from:cody")
+	 ("cody+unread" . "from:cody and tag:unread"))))
  '(notmuch-search-oldest-first nil)
  '(notmuch-show-all-multipart/alternative-parts nil)
+ '(org-babel-load-languages (quote ((sh . t) (awk . t) (emacs-lisp . t))))
+ '(org-confirm-babel-evaluate nil)
  '(org-modules
    (quote
-    (org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-protocol org-rmail org-w3m org-drill org-git-link)))
+	(org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-protocol org-rmail org-w3m org-drill org-git-link)))
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(split-width-threshold 200)
  '(starttls-extra-arguments (quote ("--insecure")))
+ '(tab-width 4)
  '(tool-bar-mode nil)
- '(znc-servers
-   (quote
-    (("loach.vireo.org" 9999 t
-      ((chat\.freenode\.net "stew" "bianchirb1")))))))
-(put 'narrow-to-region 'disabled nil)
-(put 'set-goal-column 'disabled nil)
+ '(twittering-username "stewoconnor")
+ '(yas-snippet-dirs (quote ("~/.emacs.d/snippets"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(col-highlight ((t (:background "gray5"))))
+ '(ensime-implicit-highlight ((t (:underline nil :slant italic))))
+ '(vline-visual ((t (:background "gray2")))))

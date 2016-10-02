@@ -4,7 +4,7 @@
 # --
 name := "$1"
 
-scalaVersion := "2.11.2"
+scalaVersion := "`scala-version`"
 
 scalacOptions := Seq(
   "-deprecation",
@@ -22,5 +22,6 @@ scalacOptions := Seq(
   "-Ywarn-value-discard")
 
 libraryDependencies ++= Seq(
-  "org.scalacheck" %% "scalacheck"           % "1.11.6" % "test",
-  "org.typelevel"  %% "shapeless-scalacheck" % "0.4-SNAPSHOT")
+  "org.scalacheck" %% "scalacheck" % "1.13.2" % "test",
+  "org.scalatest"  %% "scalatest"  % "3.0.0"  % "test"
+)
