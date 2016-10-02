@@ -3,16 +3,18 @@
 
 (setq mc/cmds-to-run-for-all
       '(
-	ensime-mouse-motion
-	isearch-backward-regexp
-	isearch-forward-regexp
-	isearch-printing-char
-	isearch-repeat-forward
-	kill-region
-	mark-sexp
-	org-self-insert-command
-	))
+		cycle-spacing
+		ensime-mouse-motion
+		isearch-backward-regexp
+		isearch-forward-regexp
+		isearch-printing-char
+		isearch-repeat-forward
+		kill-region
+		mark-sexp
+		org-self-insert-command
+		))
 
 (setq mc/cmds-to-run-once
       '(
-	))
+		markdown-exdent-or-delete
+		))

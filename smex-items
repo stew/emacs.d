@@ -1,63 +1,79 @@
 
 ;; ----- smex-history -----
 (
- die
+ make-directory
+ json-mode-beautify
+ calendar
+ base64-decode-region
+ scratch
  notmuch
- magit-blame
- find-dired
- revert-buffer
- ensime
- magit-blame-mode
+ menu-bar-mode
 )
 
 ;; ----- smex-data -----
 (
- (menu-bar-mode . 2)
- (replace-string . 44)
- (die . 8)
- (scratch . 14)
+ (menu-bar-mode . 4)
+ (replace-string . 48)
+ (die . 11)
+ (scratch . 20)
  (sort-lines . 2)
  (recover-this-file . 7)
- (make-directory . 4)
- (eshell . 5)
+ (make-directory . 12)
+ (eshell . 6)
  (package-install . 4)
  (markdown-mode . 1)
  (replace-regexp . 4)
  (json-mode . 1)
  (package-show-package-list . 1)
- (stew\.el . 6)
+ (stew\.el . 10)
  (gnus-summary-limit-to-bodies . 2)
  (conf-mode . 1)
- (notmuch . 29)
+ (notmuch . 31)
  (sh-mode . 2)
  (hcl-mode . 1)
  (server-force-delete . 1)
- (ensime . 41)
- (ensime-shutdown . 4)
+ (ensime . 46)
+ (ensime-shutdown . 6)
  (set-face-background-pixmap . 1)
- (yas-minor-mode . 4)
- (scalaz . 20)
+ (yas-minor-mode . 12)
+ (scalaz . 23)
  (sgml-name-8bit-mode . 1)
- (base64-decode-region . 1)
+ (base64-decode-region . 3)
  (article-unsplit-urls . 2)
  (magit-blame . 7)
  (eval-expression . 1)
- (artist-mode . 3)
- (fundamental-mode . 1)
+ (artist-mode . 16)
+ (fundamental-mode . 2)
  (gnus-article-capitalize-sentences . 1)
  (auto-fill-mode . 1)
  (flyspell-mode . 2)
  (shell-command-on-region . 1)
- (yas-expand . 1)
- (make-scala-project-dirs . 4)
+ (yas-expand . 11)
+ (make-scala-project-dirs . 11)
  (5x5-crack-xor-mutate . 1)
  (ensime-reload . 3)
  (footnote-mode . 2)
  (article-date-lapsed . 1)
  (magit-blame-mode . 2)
- (json-mode-beautify . 2)
+ (json-mode-beautify . 6)
  (ansible::decrypt-buffer . 3)
  (customize-apropos . 1)
  (find-dired . 5)
  (revert-buffer . 2)
+ (yas-reload-all . 6)
+ (customize-variable . 4)
+ (package-list-packages . 3)
+ (eval-last-sexp . 1)
+ (gnus-summary-put-mark-as-expirable-next-unread . 1)
+ (cats . 1)
+ (org-priority-down . 5)
+ (ansi-term . 1)
+ (shell . 3)
+ (emacs-lisp-mode . 1)
+ (scroll-bar-mode . 1)
+ (verizon\.org . 3)
+ (artist-select-op-straight-line . 2)
+ (scala-mode . 11)
+ (ensime-mode . 3)
+ (calendar . 1)
 )

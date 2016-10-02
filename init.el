@@ -32,18 +32,18 @@
  '(column-number-mode t)
  '(custom-safe-themes
    (quote
-    ("55d31108a7dc4a268a1432cd60a7558824223684afecefa6fae327212c40f8d3" default)))
+	("55d31108a7dc4a268a1432cd60a7558824223684afecefa6fae327212c40f8d3" default)))
  '(ensime-graphical-tooltips t)
  '(exec-path
    (quote
-    ("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
+	("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
  '(grep-find-ignored-directories
    (quote
-    ("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ".ensime_cache")))
+	("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ".ensime_cache")))
  '(haskell-font-lock-symbols t)
  '(haskell-mode-hook
    (quote
-    (turn-on-eldoc-mode turn-on-haskell-decl-scan turn-on-haskell-doc turn-on-haskell-indentation)) t)
+	(turn-on-eldoc-mode turn-on-haskell-decl-scan turn-on-haskell-doc turn-on-haskell-indentation)) t)
  '(idris-interpreter-path "/Users/stew/.cabal/bin/idris")
  '(indent-tabs-mode t)
  '(line-move-visual nil)
@@ -52,24 +52,26 @@
  '(notmuch-hello-thousands-separator ",")
  '(notmuch-saved-searches
    (quote
-    (("inbox" . "tag:inbox")
-     ("unread" . "tag:unread")
-     ("inbox+unread" . "tag:inbox and tag:unread")
-     ("cody" . "from:cody")
-     ("cody+unread" . "from:cody and tag:unread"))))
+	(("inbox" . "tag:inbox")
+	 ("unread" . "tag:unread")
+	 ("inbox+unread" . "tag:inbox and tag:unread")
+	 ("cody" . "from:cody")
+	 ("cody+unread" . "from:cody and tag:unread"))))
  '(notmuch-search-oldest-first nil)
  '(notmuch-show-all-multipart/alternative-parts nil)
  '(org-babel-load-languages (quote ((sh . t) (awk . t) (emacs-lisp . t))))
  '(org-confirm-babel-evaluate nil)
  '(org-modules
    (quote
-    (org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-protocol org-rmail org-w3m org-drill org-git-link)))
+	(org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-protocol org-rmail org-w3m org-drill org-git-link)))
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(split-width-threshold 200)
  '(starttls-extra-arguments (quote ("--insecure")))
+ '(tab-width 4)
  '(tool-bar-mode nil)
- '(twittering-username "stewoconnor"))
+ '(twittering-username "stewoconnor")
+ '(yas-snippet-dirs (quote ("~/.emacs.d/snippets"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
