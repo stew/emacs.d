@@ -3,10 +3,6 @@
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
-
-; list the packages you want
-(setq package-list '(projectile git-link smex multiple-cursors key-chord git-gutter scala-mode2 ensime idris-mode org-jira confluence notmuch notmuch-labeler znc magit json-mode yaml-mode ace-jump-mode markdown-mode hydra))
-
 ; activate all the packages (in particular autoloads)
 (package-initialize)
 
@@ -14,10 +10,10 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-; install the missing packages
-(dolist (package package-list)
-  (unless (package-installed-p package)
-    (package-install package)))
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(require 'use-package)
 
 (require 'ob-tangle)
 (org-babel-load-file "~/.emacs.d/Stew.org")

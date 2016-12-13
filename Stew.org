@@ -89,6 +89,9 @@ when I create a third column, make them all 1/3 size
 * widgets
 ** helm								      :drill:
 #+begin_src emacs-lisp
+(use-package helm
+  :ensure t)
+
 ;(global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-x g") 'helm-do-grep)
 (setq helm-grep-default-command "/usr/local/bin/ggrep")
@@ -121,7 +124,7 @@ by travelling through ancestral directories until wy find a .git or
 similar
 
 #+begin_src emacs-lisp
-(require 'projectile)
+(use-package projectile)
 (projectile-global-mode)
 #+end_src
 ** ido
@@ -169,42 +172,35 @@ Generate a github link to the current point or region.
 
 #+begin_src emacs-lisp
 ;(add-to-list 'load-path "~/.emacs.d/git-link")
-(require `git-link)
+(use-package git-link)
 #+end_src
 ** smex
 http://www.emacswiki.org/emacs/Smex
 
 M-x enhancement.
 #+begin_src emacs-lisp
-;(require `smex)
+(use-package smex)
 (global-set-key (kbd "M-x") `smex)
 (global-set-key (kbd "M-X") `smex-major-mode-commands)
 #+end_src
-** ace jump
+** avy
+https://github.com/abo-abo/avy
+
+replacement for ace-jump
+
 http://www.emacswiki.org/emacs/AceJump
 
+
+here's the old ace-jump demo
 fast cursor movement. see the demo:
 http://dl.dropboxusercontent.com/u/3254819/AceJumpModeDemo/AceJumpDemo.htm
 
 #+begin_src emacs-lisp
-(autoload
-   'ace-jump-mode
-   "ace-jump-mode"
-   "Emacs quick move minor mode"
-   t)
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
-
-(autoload
-  'ace-jump-mode-pop-mark
-  "ace-jump-mode"
-  t)
-(eval-after-load "ace-jump-mode"
-  '(ace-jump-mode-enable-mark-sync))
-(define-key global-map (kbd "C-x SPC") 'ace-jump-mode-pop-mark)
+(use-package avy)
 #+end_src
 ** multiple cursors
 #+begin_src emacs-lisp
-(require 'multiple-cursors)
+(use-package multiple-cursors)
 (global-set-key (kbd "C-M-c") 'mc/edit-lines)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
@@ -231,16 +227,16 @@ code folding. lets you collapse method bodies in source.
 I ran out of pinkies and modifier keys, this lets you assign a
 function to two keys hit in rapid succession
 #+begin_src emacs-lisp
-(require 'key-chord)
-(key-chord-define-global "jj" 'ace-jump-word-mode)
-(key-chord-define-global "jl" 'ace-jump-line-mode)
-(key-chord-define-global "jk" 'ace-jump-char-mode)
+(use-package key-chord)
+(key-chord-define-global "jj" 'avy-goto-char)
+(key-chord-define-global "jl" 'avy-goto-line)
 (key-chord-define-global "jn" 'linum-mode)
 (key-chord-mode +1)
 #+end_src
 
 ** magit
 #+begin_src emacs-lisp
+(use-package magit)
 (global-set-key (kbd "C-c C-v m") 'magit-status)
 #+end_src
 ** ediff
@@ -249,7 +245,7 @@ function to two keys hit in rapid succession
 #+end_src
 ** git-gutter							      :drill:
 #+begin_src emacs-lisp
-(require 'git-gutter) 
+(use-package git-gutter) 
 
 ;; If you enable global minor mode
 (global-git-gutter-mode t)
@@ -419,46 +415,29 @@ This is way better than the scala mode that is distributed by scala
 directly.
 #+begin_src emacs-lisp
 ;(add-to-list 'load-path "~/.emacs.d/scala-mode2/")
-(require 'scala-mode2)
+(use-package scala-mode2)
 (setq scala-indent:align-parameters t)
 (setq scala-indent:use-javadoc-style t)
 (setq col-highlight-set-interval 1)
 #+end_src
 *** ensime
-#+begin_src emacs-lisp
-;(add-to-list 'load-path "~/.emacs.d/ensime")
-(require 'ensime)
-(setq ensime-startup-snapshot-notification nil)
-;(setq ensime-default-server-cmd "bin/server")
-;(setq ensime-default-server-cmd "bin/server")
-;(setq ensime-default-server-host "localhost")
-;(setq ensime-graphical-tooltips nil)
-;(setq ensime-tooltip-type-hints t)
-(setq ensime-sbt-command "/home/stew/bin/sbt")
+#+begin_src
+(use-package ensime
+  :ensure t
+  :pin melpa-stable)
+
+(add-to-list 'exec-path "~/bin")
 
 (defun killall-java ()
   (interactive)
   (shell-command "killall java"))
 
 (global-set-key (kbd "C-c C-v K") 'killall-java)
-(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
-
-(defun run-ensime-generate (sbt-path)
-  (switch-to-buffer "*ensime-generate*")
-  (cd sbt-path)
-  (start-process "ensime-generate" "*ensime-generate*" "sbt" "ensime generate -s"))
 
 (defun run-genCtags (sbt-path)
   (switch-to-buffer "*genCtags*")
   (cd sbt-path)
   (start-process "genCtags" "*genCTags*" "sbt" "genCtags"))
-
-(defun ensime-generate ()
-  (interactive)
-  (let ((my-sbt-file (find-containing-dir-upwards "build.sbt")))
-    (when my-sbt-file
-      (message "generate ensimme configuration for project: %s" my-sbt-file)
-      (run-ensime-generate my-sbt-file))))
 
 (defun genCtags ()
   (interactive)
@@ -485,16 +464,16 @@ because you know I'm fancy like that
 (defun scala-right-arrow ()
   (interactive)
   (cond ((looking-back "=") 
-	 (backward-delete-char 1) (insert "⇒"))
+	 (backward-delete-char 1) (insert "\u21d2")) ; ⇒
 	((looking-back "-")
-	 (backward-delete-char 1) (insert "→"))
+	 (backward-delete-char 1) (insert "\u2192")) ; →
 	(t (insert ">"))))
 
 (defun scala-left-arrow ()
   (interactive)
   (if (looking-back "<") 
       (progn (backward-delete-char 1)
-	     (insert "←"))
+	     (insert "\u2190")) ; ←
     (insert "-")))
 
 (defun scala-enable-fancy-arrows ()
@@ -506,8 +485,6 @@ because you know I'm fancy like that
   (interactive)
   (local-set-key (kbd "-") `self-insert-command)
   (local-set-key (kbd ">") `self-insert-command))
-  
-
 
 #+end_src
 *** yasnippet
@@ -594,7 +571,9 @@ and either creates it, or visits it
 
 (add-hook 'scala-mode-hook 
 	  '(lambda () 
-	     (local-set-key (kbd "C-c t") `scala-visit-spec)))
+	     (progn
+           (scala-disable-fancy-arrows)
+           (local-set-key (kbd "C-c t") `scala-visit-spec))))
 
 
 #+end_src
@@ -655,11 +634,13 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
   (goto-char (- (search-forward "{") 1))
   (forward-sexp))
 
-(add-hook 'scala-mode-hook 
-	  '(lambda () 
-	     (set (make-local-variable 'beginning-of-defun-function) 'scala-beginning-of-defun)
+
+(defun my-scala-mode-hook ()
+  (progn (set (make-local-variable 'beginning-of-defun-function) 'scala-beginning-of-defun)
 	     (set (make-local-variable 'end-of-defun-function) 'scala-end-of-defun)
 	     (hs-minor-mode)))
+
+(add-hook 'scala-mode-hook 'my-scala-mode-hook)
 
 (defun increment-number-at-point ()
   (interactive)
@@ -812,10 +793,18 @@ Org-mobile setup:
 
 (global-set-key (kbd "C-c a") `org-agenda)
 #+end_src
+*** playing with archive
+#+begin_src emacs-lisp
+(defun my-org-archive-done-tasks ()
+  (interactive)
+  (org-map-entries 'org-archive-subtree "/DONE" 'file))
+#+end_src
+
+
 
 ** idris
 #+begin_src emacs-lisp
-(require 'idris-mode) 
+(use-package idris-mode) 
 #+end_src  
 ** elisp
 #+begin_src emacs-lisp
@@ -831,6 +820,13 @@ Org-mobile setup:
    (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
 #+end_src
 
+** misc
+#+begin_src emacs-lisp
+(use-package json-mode)
+(use-package yaml-mode)
+(use-package markdown-mode)
+
+#+end_src
 * directories
 some directores I open all the time, make a quick way to get a dired
 buffer open at the top level of a few projects
@@ -877,8 +873,8 @@ buffer open at the top level of a few projects
 * notmuch
 #+begin_src emacs-lisp
 (require 'cl)
-(require 'notmuch)
-(require 'notmuch-labeler)
+(use-package notmuch)
+(use-package notmuch-labeler)
 (defun notmuch-search-toggle-delete ()
   "Return a function that toggles TAG on the current item."
   (lambda ()
@@ -897,64 +893,6 @@ buffer open at the top level of a few projects
 (notmuch-address-message-insinuate)
 (setq gnus-inhibit-images nil)
 (require 'gnus-art)
-#+end_src
-* erc
-#+begin_src emacs-lisp
-;(setq erc-server-auto-reconnect t)
-(setq erc-colors-list '("green" "blue" "red"
-			"dark orange" "white"
-			"dark magenta" "maroon"
-			"indian red" "forest green"
-			"midnight blue" "dark violet"))
-;; special colors for some people
-(setq erc-nick-color-alist '(("John" . "blue")
-			     ("Bob" . "red")
-			     ))
-
-(defun erc-get-color-for-nick (nick)
-  "Gets a color for NICK. If NICK is in erc-nick-color-alist, use that color, else hash the nick and use a random color from the pool"
-  (or (cdr (assoc nick erc-nick-color-alist))
-      (nth
-       (mod (string-to-number
-	     (substring (md5 (downcase nick)) 0 6) 16)
-	    (length erc-colors-list))
-       erc-colors-list)))
-
-(defun erc-put-color-on-nick ()
-  "Modifies the color of nicks according to erc-get-color-for-nick"
-  (save-excursion
-    (goto-char (point-min))
-    (while (forward-word 1)
-      (setq bounds (bounds-of-thing-at-point 'word))
-      (setq word (buffer-substring-no-properties
-                  (car bounds) (cdr bounds)))
-      (when (or (and (erc-server-buffer-p) (erc-get-server-user word))
-                (and erc-channel-users (erc-get-channel-user word)))
-        (put-text-property (car bounds) (cdr bounds) 
-                           'face (cons 'foreground-color
-                                       (erc-get-color-for-nick word)))))))
-
-(add-hook 'erc-insert-modify-hook 'erc-put-color-on-nick)
-
-  (defvar erc-channels-to-visit nil
-    "Channels that have not yet been visited by erc-next-channel-buffer")
-  (defun erc-next-channel-buffer ()
-    "Switch to the next unvisited channel. See erc-channels-to-visit"
-    (interactive)
-    (when (null erc-channels-to-visit)
-      (setq erc-channels-to-visit 
-	    (remove (current-buffer) (erc-channel-list nil))))
-    (let ((target (pop erc-channels-to-visit)))
-      (if target 
-	  (switch-to-buffer target))))
-
-;(global-set-key (kbd "C-c a") `erc-next-channel-buffer)
-(setq erc-hide-list '("JOIN" "PART" "QUIT"))
-#+end_src
-** znc
-#+begin_src emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/ZNC.el")
-(require 'znc)
 #+end_src
 * tags
 ** find-next-tag

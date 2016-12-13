@@ -1,0 +1,29 @@
+# -*- mode: snippet -*-
+# name: skeleton sbt file
+# key: sbt-dogs
+# --
+name := "$1"
+
+scalaVersion := "`scala-version`"
+
+scalacOptions := Seq(
+  "-deprecation",
+  "-encoding", "utf8",
+  "-language:postfixOps",
+  "-language:higherKinds",
+  "-target:jvm-1.7",
+  "-unchecked",
+  "-Xcheckinit",
+  "-Xfuture",
+  "-Xlint",
+  "-Xfatal-warnings",
+  "-Yno-adapted-args",
+  "-Ywarn-dead-code",
+  "-Ywarn-value-discard")
+
+libraryDependencies ++= Seq(
+  "org.typelevel" %% "cats-core" % "0.6.1" %
+
+  "org.scalacheck" %% "scalacheck" % "1.13.2" % "test",
+  "org.scalatest"  %% "scalatest"  % "3.0.0"  % "test"
+)

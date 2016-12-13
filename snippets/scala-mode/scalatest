@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: scalatest test with scalacheck
+# key: scalatest
+# --
+package test
+
+import org.scalatest._
+import org.scalatest.prop._
+import org.scalacheck._
+import Arbitrary._
+import org.scalacheck.Prop._
+
+class $1Spec extends FlatSpec with Matchers with Checkers {
+  "the world" should "be sane" in {
+
+     (1 + 1 + 1) should be (3)
+   }
+
+  "this check" should "fail" in check {(i: Int) =>
+      (i + 1) should be < (5)  
+	  true
+   }
+}
