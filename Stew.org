@@ -424,6 +424,10 @@ directly.
 #+begin_src
 (use-package ensime
   :ensure t
+  :init
+    (progn 
+      (setq ensime-startup-notification nil)
+      (setq ensime-startup-snapshot-notification nil))
   :pin melpa-stable)
 
 (add-to-list 'exec-path "~/bin")
