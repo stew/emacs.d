@@ -1,5 +1,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (package-initialize)
 
@@ -32,16 +33,18 @@
  '(ensime-graphical-tooltips t)
  '(exec-path
    (quote
-	("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
+	("~/.nix-profile/bin" "/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin" "~/.cargo/bin")))
+ '(flycheck-rust-library-path (quote ("/home/stew/.cargo/bin")))
  '(grep-find-ignored-directories
    (quote
-	("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ".ensime_cache")))
+	("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ".ensime_cache" "target")))
  '(haskell-font-lock-symbols t)
  '(haskell-mode-hook
    (quote
 	(turn-on-eldoc-mode turn-on-haskell-decl-scan turn-on-haskell-doc turn-on-haskell-indentation)) t)
- '(idris-interpreter-path "/Users/stew/.cabal/bin/idris")
+ '(idris-interpreter-path "/home/stew/.cabal/bin/idris")
  '(indent-tabs-mode t)
+ '(ispell-program-name "aspell")
  '(line-move-visual nil)
  '(menu-bar-mode nil)
  '(nil nil t)
@@ -60,6 +63,10 @@
  '(org-modules
    (quote
 	(org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-protocol org-rmail org-w3m org-drill org-git-link)))
+ '(package-selected-packages
+   (quote
+	(znc yaml-mode use-package twittering-mode smex scala-mode2 rust-mode paredit org-jira notmuch-labeler multiple-cursors markdown-mode magit key-chord json-mode intero idris-mode hydra helm-projectile helm-grepint helm-git-grep hcl-mode golint go-eldoc go-autocomplete git-link git-gutter flymake-rust ensime confluence avy autumn-light-theme ansible ace-jump-mode)))
+ '(python-indent-offset 2)
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(split-width-threshold 200)

@@ -231,6 +231,8 @@ function to two keys hit in rapid succession
 (key-chord-define-global "jj" 'avy-goto-char)
 (key-chord-define-global "jl" 'avy-goto-line)
 (key-chord-define-global "jn" 'linum-mode)
+(key-chord-define-global "qo" 'open-line)
+(key-chord-define-global "qr" 'rgrep)
 (key-chord-mode +1)
 #+end_src
 
@@ -727,6 +729,18 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
   (local-set-key (kbd "s-t") `transpose-args)))
 
 #+end_src
+*** current cats version
+#+begin_src emacs-lisp
+(defun current-cats (module)
+  (replace-regexp-in-string
+   "\n$" "" 
+   (shell-command-to-string "curl -sk https://api.github.com/repos/typelevel/cats/releases | /Users/v724000/.nix-profile/bin/jq --raw-output '.[0].tag_name' | sed 's/^v\\(.*\\)$/\"org.typelevel\" %% \"cats-core\" % \"\\1\"/'")))
+
+(defun cats-core ()
+  (interactive)
+  (insert-string (current-cats "core")))
+#+end_src
+
 ** go
 #+begin_src emacs-lisp
 (defun go-mode-setup ()
@@ -765,15 +779,15 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 #+end_src
 ** org-mode
 #+begin_src emacs-lisp
-(setq org-agenda-files (quote ("~/Dropbox/org/verizon.org" "~/Dropbox/org/misc.org")))
-(setq org-journal-dir "~/Dropbox/aorg/journal")
+(setq org-agenda-files (quote ("~/Desktop/annex/org/verizon.org" "~/Desktop/annex/org/misc.org" "~/Desktop/annex/org/.org")))
+(setq org-journal-dir "~/Desktop/annex/org/journal")
 
 (require 'org-protocol)
 
 (defun find-todo-org-file ()
   "open my todo.org feil"
   (interactive)
-  (find-file "~/Dropbox/org/todo.org")
+  (find-file "~/Desktop/annex/org/todo.org")
   )
 
 (load-library "ox-md")
@@ -789,11 +803,11 @@ Org-mobile setup:
 
 #+begin_src emacs-lisp
 ;; Set to the location of your Org files on your local system
-(setq org-directory "~/Dropbox/org")
+(setq org-directory "~/Desktop/annex/org")
 ;; Set to the name of the file where new notes will be stored
-(setq org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
+(setq org-mobile-inbox-for-pull "~/Desktop/annex/org/flagged.org")
 ;; Set to <your Dropbox root directory>/MobileOrg.
-(setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+(setq org-mobile-directory "~/Desktop/annex/Apps/MobileOrg")
 
 (global-set-key (kbd "C-c a") `org-agenda)
 #+end_src
@@ -803,7 +817,6 @@ Org-mobile setup:
   (interactive)
   (org-map-entries 'org-archive-subtree "/DONE" 'file))
 #+end_src
-
 
 
 ** idris
@@ -822,6 +835,13 @@ Org-mobile setup:
 ** hcl
 #+begin_src emacs-lisp
    (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
+#+end_src
+
+** rust
+#+begin_src emacs-lisp
+(require 'flymake-rust)
+(add-hook 'rust-mode-hook 'flymake-rust-load)
+(setq flymake-rust-use-cargo 1)
 #+end_src
 
 ** misc
@@ -1059,8 +1079,8 @@ and does nothing if there isn't one."
 ** open this file
 #+begin_src emacs-lisp
 (defun stew.el () (interactive) (find-file "~/.emacs.d/Stew.org"))
-(defun verizon.org () (interactive) (find-file "~/org/verizon.org"))
-(defun misc.org () (interactive) (find-file "~/org/misc.org"))
+(defun verizon.org () (interactive) (find-file "~/Desktop/annex/org/verizon.org"))
+(defun misc.org () (interactive) (find-file "~/Desktop/annex/org/misc.org"))
 #+end_src
 
 * fira

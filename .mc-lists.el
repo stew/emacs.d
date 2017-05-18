@@ -6,6 +6,7 @@
 		cycle-spacing
 		ensime-mouse-motion
 		isearch-backward-regexp
+		isearch-delete-char
 		isearch-forward-regexp
 		isearch-printing-char
 		isearch-repeat-forward
@@ -17,4 +18,5 @@
 (setq mc/cmds-to-run-once
       '(
 		markdown-exdent-or-delete
+		yaml-electric-backspace
 		))
