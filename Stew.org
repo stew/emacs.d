@@ -1,6 +1,6 @@
 #+TITLE: stew's emacs init
 #+AUTHOR: Mike (stew) O'Connor
-#+EMAIL: stew@vireo.org
+X2#+EMAIL: stew@vireo.org
 #+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 #+OPTIONS: author:t c:nil creator:comment d:(not "LOGBOOK") date:t
 #+OPTIONS: e:t email:nil f:t inline:t num:t p:nil pri:nil stat:t
@@ -12,7 +12,6 @@
 #+KEYWORDS:
 #+LANGUAGE: en
 #+SELECT_TAGS: export
-#+TAGS: { drill(d) }
 This is my .emacs file, organized into an org-mode document using org-babel.
 * load-path
 #+begin_src emacs-lisp
@@ -86,35 +85,10 @@ when I create a third column, make them all 1/3 size
     (progn
       (tool-bar-mode -1)))
 #+end_src
+
 * widgets
-** helm								      :drill:
-#+begin_src emacs-lisp
-(use-package helm
-  :ensure t)
-
-;(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x g") 'helm-do-grep)
-(setq helm-grep-default-command "/usr/local/bin/ggrep")
-
-(global-set-key (kbd "C-c g") 'helm-git-grep)
-(define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
-
-(setq helm-M-x-fuzzy-match t) ;; optional fuzzy matching for helm-M-x
-
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-
-; I waffle on which of these I want to use
-; currently using helm becuse:
-;  - It helps with tramp
-;  - I'm not ready to lose tab completion
-(global-set-key (kbd "C-x C-f") 'ido-find-file)
-;(global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-
-(global-set-key (kbd "C-x g") 'helm-do-grep)
-(global-set-key (kbd "C-x b") 'helm-mini)
-
-#+end_src
+** git-gutter
+** helm
 ** projectile
 http://wikemacs.org/index.php/Projectile
 
@@ -127,6 +101,16 @@ similar
 (use-package projectile)
 (projectile-global-mode)
 #+end_src
+** ivy
+A replacement for ido?
+
+#+begin_src emacs-lisp
+(use-package ivy
+  :diminish ivy-mode
+  :config
+  (ivy-mode 1)
+  (bind-key "C-c C-r" 'ivy-resume))
+#+end_src
 ** ido
 http://wikemacs.org/index.php/Ido
 
@@ -135,6 +119,7 @@ buffers and more. Can't imagine live without it once you get used to
 it.  
 
 #+begin_src emacs-lisp
+;(use-package )
 ;(ido-mode t)
 ;(setq ido-auto-merge-delay-time 2)
 ;(setq ido-everywhere t)
@@ -179,9 +164,10 @@ http://www.emacswiki.org/emacs/Smex
 
 M-x enhancement.
 #+begin_src emacs-lisp
-(use-package smex)
-(global-set-key (kbd "M-x") `smex)
-(global-set-key (kbd "M-X") `smex-major-mode-commands)
+(use-package smex
+  :commands smex 
+  :init (bind-key "M-x" 'smex))
+
 #+end_src
 ** avy
 https://github.com/abo-abo/avy
@@ -200,14 +186,13 @@ http://dl.dropboxusercontent.com/u/3254819/AceJumpModeDemo/AceJumpDemo.htm
 #+end_src
 ** multiple cursors
 #+begin_src emacs-lisp
-(use-package multiple-cursors)
-(global-set-key (kbd "C-M-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+;(use-package multiple-cursors)
+;(global-set-key (kbd "C-M-c") 'mc/edit-lines)
+;(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+;(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+;(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+;(global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 #+end_src
-
 ** hs
 code folding. lets you collapse method bodies in source.
 
@@ -245,33 +230,6 @@ function to two keys hit in rapid succession
 #+begin_src emacs-lisp
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+end_src
-** git-gutter							      :drill:
-#+begin_src emacs-lisp
-(use-package git-gutter) 
-
-;; If you enable global minor mode
-(global-git-gutter-mode t)
-
-;; If you would like to use git-gutter.el and linum-mode
-;(git-gutter:linum-setup)
-
-(define-prefix-command 'gg-prefix)
-(global-set-key (kbd "C-x C-g") 'gg-prefix)
-
-(global-set-key (kbd "C-x C-g t") 'git-gutter:toggle)
-(global-set-key (kbd "C-x C-g =") 'git-gutter:popup-hunk)
-
-;; Jump to next/previous hunk
-(global-set-key (kbd "C-x p") 'git-gutter:previous-hunk)
-(global-set-key (kbd "C-x n") 'git-gutter:next-hunk)
-
-;; Stage current hunk
-(global-set-key (kbd "C-x C-g s") 'git-gutter:stage-hunk)
-
-;; Revert current hunk
-(global-set-key (kbd "C-x C-g r") 'git-gutter:revert-hunk)
-
-#+end_src
 ** calendar
 #+begin_src emacs-lisp
  (setq mark-holidays-in-calendar t)
@@ -280,7 +238,7 @@ function to two keys hit in rapid succession
 #+begin_src emacs-lisp
 (require `col-highlight)
 (global-set-key (kbd "C-|") `flash-column-highlight)
-(toggle-highlight-column-when-idle 1)
+(toggle-highlight-column-when-idle 0)
 #+end_src
 ** jmh
 #+begin_src emacs-lisp
@@ -318,6 +276,41 @@ function to two keys hit in rapid succession
          (pretty (prettynumber mything)))
       (delete-region pos1 pos2)
       (insert pretty)))
+#+end_src
+
+** firacode
+#+begin_src emacs-lisp
+(when (window-system)
+  (set-frame-font "Fira Code"))
+(let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
+               (35 . ".\\(?:###\\|##\\|_(\\|[#(?[_{]\\)")
+               (36 . ".\\(?:>\\)")
+               (37 . ".\\(?:\\(?:%%\\)\\|%\\)")
+               (38 . ".\\(?:\\(?:&&\\)\\|&\\)")
+               (42 . ".\\(?:\\(?:\\*\\*/\\)\\|\\(?:\\*[*/]\\)\\|[*/>]\\)")
+               (43 . ".\\(?:\\(?:\\+\\+\\)\\|[+>]\\)")
+               (45 . ".\\(?:\\(?:-[>-]\\|<<\\|>>\\)\\|[<>}~-]\\)")
+               (46 . ".\\(?:\\(?:\\.[.<]\\)\\|[.=-]\\)")
+               (47 . ".\\(?:\\(?:\\*\\*\\|//\\|==\\)\\|[*/=>]\\)")
+               (48 . ".\\(?:x[a-zA-Z]\\)")
+               (58 . ".\\(?:::\\|[:=]\\)")
+               (59 . ".\\(?:;;\\|;\\)")
+               (60 . ".\\(?:\\(?:!--\\)\\|\\(?:~~\\|->\\|\\$>\\|\\*>\\|\\+>\\|--\\|<[<=-]\\|=[<=>]\\||>\\)\\|[*$+~/<=>|-]\\)")
+               (61 . ".\\(?:\\(?:/=\\|:=\\|<<\\|=[=>]\\|>>\\)\\|[<=>~]\\)")
+               (62 . ".\\(?:\\(?:=>\\|>[=>-]\\)\\|[=>-]\\)")
+               (63 . ".\\(?:\\(\\?\\?\\)\\|[:=?]\\)")
+               (91 . ".\\(?:]\\)")
+               (92 . ".\\(?:\\(?:\\\\\\\\\\)\\|\\\\\\)")
+               (94 . ".\\(?:=\\)")
+               (119 . ".\\(?:ww\\)")
+               (123 . ".\\(?:-\\)")
+               (124 . ".\\(?:\\(?:|[=|]\\)\\|[=>|]\\)")
+               (126 . ".\\(?:~>\\|~~\\|[>=@~-]\\)")
+               )
+             ))
+  (dolist (char-regexp alist)
+    (set-char-table-range composition-function-table (car char-regexp)
+                          `([,(cdr char-regexp) 0 font-shape-gstring]))))
 #+end_src
 
 * keybindings
@@ -413,24 +406,33 @@ _h_   _l_   _o_k        _y_ank
 * modes
 ** scala
 *** scala2-mode
-This is way better than the scala mode that is distributed by scala
-directly.
 #+begin_src emacs-lisp
-;(add-to-list 'load-path "~/.emacs.d/scala-mode2/")
-(use-package scala-mode2)
-(setq scala-indent:align-parameters t)
-(setq scala-indent:use-javadoc-style t)
-(setq col-highlight-set-interval 1)
+(use-package sbt-mode
+  :pin melpa)
+
+(use-package scala-mode
+  :pin melpa)
+
 #+end_src
 *** ensime
-#+begin_src
-(use-package ensime
-  :ensure t
-  :init
+
+#+begin_src emacs-lisp
     (progn 
       (setq ensime-startup-notification nil)
       (setq ensime-startup-snapshot-notification nil))
-  :pin melpa-stable)
+
+(use-package ensime
+  :config
+    (progn 
+      (setq ensime-startup-notification nil)
+      (setq ensime-startup-snapshot-notification nil))
+  :pin melpa)
+
+(use-package sbt-mode
+  :pin melpa)
+
+(use-package scala-mode
+  :pin melpa)
 
 (add-to-list 'exec-path "~/bin")
 
@@ -585,41 +587,75 @@ and either creates it, or visits it
 #+end_src
 *** create project structure
 #+begin_src emacs-lisp
-(defvar sbt-version "0.13.12"
+(defvar sbt-version "0.13.15"
    "sbt version to use when creating new projects")
 
-(defvar scala-version "2.11.8"
+(defvar scala-version "2.12.3"
    "scala version to use when creating new projects")
 
-(defun build.properties ()
-  (concat "sbt.version=" sbt-version "\n"))
-
-(defun make-build-properties (fn)
+(defun stew-write-file (fn str)
   (with-temp-buffer
-	(insert (build.properties))
+	(insert str)
 	(write-region (point-min) (point-max) fn t)))
 
-(defun make-scala-project-dirs ()
-  (interactive)
-  (let ((dn (find-containing-dir-upwards "build.sbt")))
-    (if dn
-      (if (y-or-n-p (concat "generate directory structure for project: " dn))
-	  (let* ((src (concat dn "/src"))
-         (project (concat dn "/project"))
-         (buildprop (concat project "/build.properties"))
-		 (main (concat src "/main"))
-		 (test (concat src "/test"))
-		 (mainscala (concat main "/scala"))
-		 (testscala (concat test "/scala")))
+(defun stew-make-build.properties (fn) 
+  (let ((build.properties (concat "sbt.version=" sbt-version "\n")))
+    (stew-write-file fn build.properties)))
 
-	    (mkdir src t)
-	    (mkdir project t)
-		(make-build-properties buildprop)
-	    (mkdir main t)
-	    (mkdir test t)
-	    (mkdir mainscala t)
-	    (mkdir testscala t)))
-      (message "could not find build.sbt"))))
+(defun stew-make-plugins.sbt (fn) 
+  (let ((plugins.sbt (concat
+                      "resolvers += Resolver.url(\n"
+                      "  \"bintray-stew\",\n"
+                      "  url(\"http://dl.bintray.com/stew/plankton\"))(\n"
+                      "  Resolver.ivyStylePatterns)\n"
+                      "\n"
+                      "addSbtPlugin(\"io.github.stew\" % \"sbt-plankton\" % \"0.0.10\")\n")))
+                      
+    (stew-write-file fn plugins.sbt)))
+
+(defun stew-make-root-build.sbt (fn)
+  (let ((build.sbt (concat
+                    "name := \"\"\n"
+                    "\n"
+                    "scalaOrganization in ThisBuild := \"org.typelevel\"\n"
+                    "scalaVersion in ThisBuild := \"2.12.2-bin-typelevel-4\"\n"
+                    "enablePlugins(ZooPlankton)\n")))
+    (stew-write-file fn build.sbt)))
+
+(defun stew-make-main.scala (fn)
+  (let ((build.sbt (concat
+                    "import scala.Array\n"
+                    "\n"
+                    "object Hello {\n"
+                    "  final def main(argv: Array[String]): Unit =\n"
+                    "    println(\"1 and 1 and 1 is \" + (1 |+| 1 |+| 1).show)\n"
+                    "}\n")))
+    (stew-write-file fn build.sbt)))
+
+(defun make-scala-project ()
+  (interactive)
+    (let ((rootdir default-directory)
+          )
+      (if (y-or-n-p (concat "generate directory structure for project: " default-directory))
+          (let* ((src (concat rootdir "/src"))
+                 (project (concat rootdir "/project"))
+                 (main (concat src "/main"))
+                 (test (concat src "/test"))
+                 (mainscala (concat main "/scala"))
+                 (main.scala (concat mainscala "/main.scala")))
+
+            (mkdir src t)
+            (mkdir project t)
+            (mkdir main t)
+            (mkdir test t)
+            (mkdir mainscala t)
+            (mkdir (concat test "/scala") t)
+            (stew-make-build.properties (concat project "/build.properties"))
+            (stew-make-root-build.sbt (concat rootdir "/build.sbt"))
+            (stew-make-plugins.sbt (concat project "/plubins.sbt"))
+            (stew-make-main.scala main.scala)
+            (find-file main.scala)))))
+
 #+end_src
 *** hack for compilation buffer
 this lets me toggle a shell window where i'm running sbt back and forth from compilation-mode and shell-mode
@@ -753,13 +789,13 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 
 (add-hook 'go-mode-hook 'go-mode-setup)
 
-(ac-config-default)
-(require 'auto-complete-config)
-(require 'go-autocomplete)
+;(ac-config-default)
+;(require 'auto-complete-config)
+;(require 'go-autocomplete)
 
 
-(add-to-list 'load-path (concat (getenv "GOPATH")  "/src/github.com/golang/lint/misc/emacs"))
-(require 'golint)
+;(add-to-list 'load-path (concat (getenv "GOPATH")  "/src/github.com/golang/lint/misc/emacs"))
+;(require 'golint)
 
 #+end_src
 ** javascript
@@ -769,17 +805,25 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 
 ** haskell
 #+begin_src emacs-lisp
-(add-to-list 'exec-path "~/.cabal/bin/")
-(add-to-list 'exec-path "/Applications/ghc-7.8.3.app/Contents/bin/")
-(add-to-list 'load-path "~/.cabal/share/x86_64-osx-ghc-7.8.3/ghc-mod-4.1.6")
-(autoload 'ghc-init "ghc" nil t)
-(autoload 'ghc-debug "ghc" nil t)
-(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
-(setq ghc-debug t)
+(use-package haskell-mode
+  :mode "\\.hs\\'"
+  :commands haskell-mode
+  :bind ("C-c C-s" . fix-imports)
+  :config
+  (custom-set-variables
+   '(haskell-ask-also-kill-buffers nil)
+   '(haskell-interactive-popup-errors nil))
+
+  (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+  (add-hook 'haskell-mode-hook 'flycheck-mode)
+;  (add-hook 'haskell-mode-hook 'hindent-mode)
+  )
+
 #+end_src
 ** org-mode
 #+begin_src emacs-lisp
-(setq org-agenda-files (quote ("~/Desktop/annex/org/verizon.org" "~/Desktop/annex/org/misc.org" "~/Desktop/annex/org/.org")))
+(setq org-agenda-files (quote ("~/Desktop/annex/org/misc.org" "~/Desktop/annex/org/.org")))
 (setq org-journal-dir "~/Desktop/annex/org/journal")
 
 (require 'org-protocol)
@@ -818,35 +862,29 @@ Org-mobile setup:
   (org-map-entries 'org-archive-subtree "/DONE" 'file))
 #+end_src
 
-
-** idris
-#+begin_src emacs-lisp
-(use-package idris-mode) 
-#+end_src  
 ** elisp
 #+begin_src emacs-lisp
      (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
      (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-#+end_src
-** proof-general
-#+begin_src emacs-lisp
-;(setq proof-splash-enable nil)
 #+end_src
 ** hcl
 #+begin_src emacs-lisp
    (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
 #+end_src
 
-** rust
+** paredit
 #+begin_src emacs-lisp
-(require 'flymake-rust)
-(add-hook 'rust-mode-hook 'flymake-rust-load)
-(setq flymake-rust-use-cargo 1)
+(use-package paredit)
 #+end_src
-
+** company
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  :bind (("C-c /" . company-complete))
+  :config (global-company-mode))
+#+end_src
 ** misc
 #+begin_src emacs-lisp
-(use-package json-mode)
 (use-package yaml-mode)
 (use-package markdown-mode)
 
@@ -881,7 +919,7 @@ buffer open at the top level of a few projects
 
 (defun scalaz ()
   (interactive)
-  (find-file "~/devel/scalaz/core/src/main/scala/scalaz"))
+  (find-file "~/src/scalaz/core/src/main/scala/scalaz"))
 
 (defun cats ()
   (interactive)
@@ -898,7 +936,6 @@ buffer open at the top level of a few projects
 #+begin_src emacs-lisp
 (require 'cl)
 (use-package notmuch)
-(use-package notmuch-labeler)
 (defun notmuch-search-toggle-delete ()
   "Return a function that toggles TAG on the current item."
   (lambda ()
@@ -1062,7 +1099,7 @@ and does nothing if there isn't one."
      ((looking-at "[]})].") (forward-char) (backward-sexp 1))
      (t (message "Could not find matching paren."))))))
 #+end_src
-** unfill-paragraph						      :drill:
+** unfill-paragraph
    :PROPERTIES:
    :ID:       62679CEB-E521-4D31-8278-4754465BF480
    :END:
@@ -1083,138 +1120,12 @@ and does nothing if there isn't one."
 (defun misc.org () (interactive) (find-file "~/Desktop/annex/org/misc.org"))
 #+end_src
 
-* fira
+* lendup
+** simple interest
 #+begin_src emacs-lisp
-;;; Fira code
-;; This works when using emacs --daemon + emacsclient
-(add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
-;; This works when using emacs without server/client
-(set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")
-;; I haven't found one statement that makes both of the above situations work, so I use both for now
-
-(defconst fira-code-font-lock-keywords-alist
-  (mapcar (lambda (regex-char-pair)
-            `(,(car regex-char-pair)
-              (0 (prog1 ()
-                   (compose-region (match-beginning 1)
-                                   (match-end 1)
-                                   ;; The first argument to concat is a string containing a literal tab
-                                   ,(concat "   " (list (decode-char 'ucs (cadr regex-char-pair)))))))))
-          '(("\\(www\\)"                   #Xe100)
-            ("[^/]\\(\\*\\*\\)[^/]"        #Xe101)
-            ("\\(\\*\\*\\*\\)"             #Xe102)
-            ("\\(\\*\\*/\\)"               #Xe103)
-            ("\\(\\*>\\)"                  #Xe104)
-            ("[^*]\\(\\*/\\)"              #Xe105)
-            ("\\(\\\\\\\\\\)"              #Xe106)
-            ("\\(\\\\\\\\\\\\\\)"          #Xe107)
-            ("\\({-\\)"                    #Xe108)
-            ("\\(\\[\\]\\)"                #Xe109)
-            ("\\(::\\)"                    #Xe10a)
-            ("\\(:::\\)"                   #Xe10b)
-            ("[^=]\\(:=\\)"                #Xe10c)
-            ("\\(!!\\)"                    #Xe10d)
-            ("\\(!=\\)"                    #Xe10e)
-            ("\\(!==\\)"                   #Xe10f)
-            ("\\(-}\\)"                    #Xe110)
-            ("\\(--\\)"                    #Xe111)
-            ("\\(---\\)"                   #Xe112)
-            ("\\(-->\\)"                   #Xe113)
-            ("[^-]\\(->\\)"                #Xe114)
-            ("\\(->>\\)"                   #Xe115)
-            ("\\(-<\\)"                    #Xe116)
-            ("\\(-<<\\)"                   #Xe117)
-            ("\\(-~\\)"                    #Xe118)
-            ("\\(#{\\)"                    #Xe119)
-            ("\\(#\\[\\)"                  #Xe11a)
-            ("\\(##\\)"                    #Xe11b)
-            ("\\(###\\)"                   #Xe11c)
-            ("\\(####\\)"                  #Xe11d)
-            ("\\(#(\\)"                    #Xe11e)
-            ("\\(#\\?\\)"                  #Xe11f)
-            ("\\(#_\\)"                    #Xe120)
-            ("\\(#_(\\)"                   #Xe121)
-            ("\\(\\.-\\)"                  #Xe122)
-            ("\\(\\.=\\)"                  #Xe123)
-            ("\\(\\.\\.\\)"                #Xe124)
-            ("\\(\\.\\.<\\)"               #Xe125)
-            ("\\(\\.\\.\\.\\)"             #Xe126)
-            ("\\(\\?=\\)"                  #Xe127)
-            ("\\(\\?\\?\\)"                #Xe128)
-            ("\\(;;\\)"                    #Xe129)
-            ("\\(/\\*\\)"                  #Xe12a)
-            ("\\(/\\*\\*\\)"               #Xe12b)
-            ("\\(/=\\)"                    #Xe12c)
-            ("\\(/==\\)"                   #Xe12d)
-            ("\\(/>\\)"                    #Xe12e)
-            ("\\(//\\)"                    #Xe12f)
-            ("\\(///\\)"                   #Xe130)
-            ("\\(&&\\)"                    #Xe131)
-            ("\\(||\\)"                    #Xe132)
-            ("\\(||=\\)"                   #Xe133)
-            ("[^|]\\(|=\\)"                #Xe134)
-            ("\\(|>\\)"                    #Xe135)
-            ("\\(\\^=\\)"                  #Xe136)
-            ("\\(\\$>\\)"                  #Xe137)
-            ("\\(\\+\\+\\)"                #Xe138)
-            ("\\(\\+\\+\\+\\)"             #Xe139)
-            ("\\(\\+>\\)"                  #Xe13a)
-            ("\\(=:=\\)"                   #Xe13b)
-            ("[^!/]\\(==\\)[^>]"           #Xe13c)
-            ("\\(===\\)"                   #Xe13d)
-            ("\\(==>\\)"                   #Xe13e)
-            ("[^=]\\(=>\\)"                #Xe13f)
-            ("\\(=>>\\)"                   #Xe140)
-            ("\\(<=\\)"                    #Xe141)
-            ("\\(=<<\\)"                   #Xe142)
-            ("\\(=/=\\)"                   #Xe143)
-            ("\\(>-\\)"                    #Xe144)
-            ("\\(>=\\)"                    #Xe145)
-            ("\\(>=>\\)"                   #Xe146)
-            ("[^-=]\\(>>\\)"               #Xe147)
-            ("\\(>>-\\)"                   #Xe148)
-            ("\\(>>=\\)"                   #Xe149)
-            ("\\(>>>\\)"                   #Xe14a)
-            ("\\(<\\*\\)"                  #Xe14b)
-            ("\\(<\\*>\\)"                 #Xe14c)
-            ("\\(<|\\)"                    #Xe14d)
-            ("\\(<|>\\)"                   #Xe14e)
-            ("\\(<\\$\\)"                  #Xe14f)
-            ("\\(<\\$>\\)"                 #Xe150)
-            ("\\(<!--\\)"                  #Xe151)
-            ("\\(<-\\)"                    #Xe152)
-            ("\\(<--\\)"                   #Xe153)
-            ("\\(<->\\)"                   #Xe154)
-            ("\\(<\\+\\)"                  #Xe155)
-            ("\\(<\\+>\\)"                 #Xe156)
-            ("\\(<=\\)"                    #Xe157)
-            ("\\(<==\\)"                   #Xe158)
-            ("\\(<=>\\)"                   #Xe159)
-            ("\\(<=<\\)"                   #Xe15a)
-            ("\\(<>\\)"                    #Xe15b)
-            ("[^-=]\\(<<\\)"               #Xe15c)
-            ("\\(<<-\\)"                   #Xe15d)
-            ("\\(<<=\\)"                   #Xe15e)
-            ("\\(<<<\\)"                   #Xe15f)
-            ("\\(<~\\)"                    #Xe160)
-            ("\\(<~~\\)"                   #Xe161)
-            ("\\(</\\)"                    #Xe162)
-            ("\\(</>\\)"                   #Xe163)
-            ("\\(~@\\)"                    #Xe164)
-            ("\\(~-\\)"                    #Xe165)
-            ("\\(~=\\)"                    #Xe166)
-            ("\\(~>\\)"                    #Xe167)
-            ("[^<]\\(~~\\)"                #Xe168)
-            ("\\(~~>\\)"                   #Xe169)
-            ("\\(%%\\)"                    #Xe16a)
-           ;; ("\\(x\\)"                   #Xe16b) This ended up being hard to do properly so i'm leaving it out.
-            ("[^:=]\\(:\\)[^:=]"           #Xe16c)
-            ("[^\\+<>]\\(\\+\\)[^\\+<>]"   #Xe16d)
-            ("[^\\*/<>]\\(\\*\\)[^\\*/<>]" #Xe16f))))
-
-(defun add-fira-code-symbol-keywords ()
-  (font-lock-add-keywords nil fira-code-font-lock-keywords-alist))
-
-(add-hook 'prog-mode-hook
-          #'add-fira-code-symbol-keywords)
-#+end_src emacs-lisp
+(defun sum-daily-interest (principal interest rate days)
+  "accumulate interest on the principal over a number of days"
+  (if (zerop days)
+       interest
+    (sum-daily-interest principal (+ interest (* rate principal)) rate (- days 1))))
+#+end_src
