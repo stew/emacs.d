@@ -1,6 +1,6 @@
 #+TITLE: stew's emacs init
 #+AUTHOR: Mike (stew) O'Connor
-X2#+EMAIL: stew@vireo.org
+#+EMAIL: stew@vireo.org
 #+OPTIONS: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline
 #+OPTIONS: author:t c:nil creator:comment d:(not "LOGBOOK") date:t
 #+OPTIONS: e:t email:nil f:t inline:t num:t p:nil pri:nil stat:t
@@ -13,6 +13,19 @@ X2#+EMAIL: stew@vireo.org
 #+LANGUAGE: en
 #+SELECT_TAGS: export
 This is my .emacs file, organized into an org-mode document using org-babel.
+* mac stuff
+#+begin_src emacs-lisp
+(use-package exec-path-from-shell
+   :ensure t
+)
+(let ((nix-vars '("NIX_LINK"
+                  "NIX_PATH"
+                  "SSL_CERT_FILE")))
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize) ; $PATH, $MANPATH and set exec-path
+    (mapcar 'exec-path-from-shell-copy-env nix-vars)))
+
+#+end_src
 * load-path
 #+begin_src emacs-lisp
 (let ((default-directory "~/.emacs.d/"))
@@ -98,7 +111,8 @@ by travelling through ancestral directories until wy find a .git or
 similar
 
 #+begin_src emacs-lisp
-(use-package projectile)
+(use-package projectile
+  :ensure t)
 (projectile-global-mode)
 #+end_src
 ** ivy
@@ -106,6 +120,8 @@ A replacement for ido?
 
 #+begin_src emacs-lisp
 (use-package ivy
+  :ensure t
+  :pin melpa
   :diminish ivy-mode
   :config
   (ivy-mode 1)
@@ -157,7 +173,18 @@ Generate a github link to the current point or region.
 
 #+begin_src emacs-lisp
 ;(add-to-list 'load-path "~/.emacs.d/git-link")
-(use-package git-link)
+(use-package git-link
+  :ensure t
+  :config (defun git-link-tgt (hostname dirname filename branch commit start end)
+  (format "https://git.target.com/%s/blob/%s/%s"
+	  dirname
+	  (or branch commit)
+	  (concat filename
+                  (when start
+                     (concat "#"
+                            (if end
+                                (format "L%s-L%s" start end)
+                              (format "L%s" start))))))))
 #+end_src
 ** smex
 http://www.emacswiki.org/emacs/Smex
@@ -165,6 +192,7 @@ http://www.emacswiki.org/emacs/Smex
 M-x enhancement.
 #+begin_src emacs-lisp
 (use-package smex
+  :ensure t
   :commands smex 
   :init (bind-key "M-x" 'smex))
 
@@ -182,7 +210,9 @@ fast cursor movement. see the demo:
 http://dl.dropboxusercontent.com/u/3254819/AceJumpModeDemo/AceJumpDemo.htm
 
 #+begin_src emacs-lisp
-(use-package avy)
+(use-package avy
+  :ensure t)
+
 #+end_src
 ** multiple cursors
 #+begin_src emacs-lisp
@@ -212,7 +242,8 @@ code folding. lets you collapse method bodies in source.
 I ran out of pinkies and modifier keys, this lets you assign a
 function to two keys hit in rapid succession
 #+begin_src emacs-lisp
-(use-package key-chord)
+(use-package key-chord
+  :ensure t)
 (key-chord-define-global "jj" 'avy-goto-char)
 (key-chord-define-global "jl" 'avy-goto-line)
 (key-chord-define-global "jn" 'linum-mode)
@@ -223,12 +254,13 @@ function to two keys hit in rapid succession
 
 ** magit
 #+begin_src emacs-lisp
-(use-package magit)
+(use-package magit
+  :ensure t)
 (global-set-key (kbd "C-c C-v m") 'magit-status)
 #+end_src
 ** ediff
 #+begin_src emacs-lisp
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+; (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+end_src
 ** calendar
 #+begin_src emacs-lisp
@@ -311,8 +343,15 @@ function to two keys hit in rapid succession
   (dolist (char-regexp alist)
     (set-char-table-range composition-function-table (car char-regexp)
                           `([,(cdr char-regexp) 0 font-shape-gstring]))))
+
 #+end_src
 
+** hydra
+#+begin_src emacs-lisp
+(use-package hydra
+   :ensure t
+   :pin melpa)
+#+end_src
 * keybindings
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-SPC") 'cycle-spacing)
@@ -406,8 +445,8 @@ _h_   _l_   _o_k        _y_ank
 * modes
 ** scala
 *** scala2-mode
-#+begin_src emacs-lisp
-(use-package sbt-mode
+#+begin_src emacs-lisp(
+use-package sbt-mode
   :pin melpa)
 
 (use-package scala-mode
@@ -422,6 +461,7 @@ _h_   _l_   _o_k        _y_ank
       (setq ensime-startup-snapshot-notification nil))
 
 (use-package ensime
+  :ensure t
   :config
     (progn 
       (setq ensime-startup-notification nil)
@@ -429,9 +469,11 @@ _h_   _l_   _o_k        _y_ank
   :pin melpa)
 
 (use-package sbt-mode
+  :ensure t
   :pin melpa)
 
 (use-package scala-mode
+  :ensure t
   :pin melpa)
 
 (add-to-list 'exec-path "~/bin")
@@ -803,22 +845,44 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 (setq js-indent-level 2)
 #+end_src
 
+** nix
+#+begin_src emacs-lisp
+(use-package nix-mode
+  :ensure t)
+
+(use-package nix-buffer
+  :ensure t
+  :commands nix-bufffer
+  :config
+  (add-hook 'find-file-hook 'nix-buffer)
+  (add-hook 'haskell-interactive-mode-hook 'nix-buffer)
+)
+
+#+end_src
 ** haskell
 #+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t)
+
 (use-package haskell-mode
+  :ensure t
   :mode "\\.hs\\'"
   :commands haskell-mode
-  :bind ("C-c C-s" . fix-imports)
   :config
   (custom-set-variables
    '(haskell-ask-also-kill-buffers nil)
    '(haskell-interactive-popup-errors nil))
-
+  (add-hook 'haskell-mode-hook 'flycheck-mode)
   (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook 'flycheck-mode)
-;  (add-hook 'haskell-mode-hook 'hindent-mode)
-  )
+)
+
+(use-package dante
+  :ensure t
+  :after haskell-mode
+  :commands 'dante-mode
+  :init
+  (add-hook 'haskell-mode-hook 'dante-mode))
 
 #+end_src
 ** org-mode
@@ -874,7 +938,8 @@ Org-mobile setup:
 
 ** paredit
 #+begin_src emacs-lisp
-(use-package paredit)
+(use-package paredit 
+  :ensure t)
 #+end_src
 ** company
 #+begin_src emacs-lisp
@@ -885,8 +950,10 @@ Org-mobile setup:
 #+end_src
 ** misc
 #+begin_src emacs-lisp
-(use-package yaml-mode)
-(use-package markdown-mode)
+(use-package yaml-mode
+  :ensure t)
+(use-package markdown-mode
+  :ensure t)
 
 #+end_src
 * directories
@@ -934,26 +1001,26 @@ buffer open at the top level of a few projects
 #+end_src
 * notmuch
 #+begin_src emacs-lisp
-(require 'cl)
-(use-package notmuch)
-(defun notmuch-search-toggle-delete ()
-  "Return a function that toggles TAG on the current item."
-  (lambda ()
-    (interactive)
-    (if (member "delete" (notmuch-search-get-tags))
-        (notmuch-search-tag (list (concat "-" "delete") "+inbox"))
-      (notmuch-search-tag (list (concat "+" "delete") "-inbox" "-unread")))
-(next-line)
-))
-
-(define-key notmuch-search-mode-map "d"
-  (notmuch-search-toggle-delete))
-
-(require 'notmuch-address)
-(setq notmuch-address-command "~/src/vala-notmuch/addrlookup")
-(notmuch-address-message-insinuate)
-(setq gnus-inhibit-images nil)
-(require 'gnus-art)
+; (require 'cl)
+; (use-package notmuch)
+; (defun notmuch-search-toggle-delete ()
+;   "Return a function that toggles TAG on the current item."
+;   (lambda ()
+;     (interactive)
+;     (if (member "delete" (notmuch-search-get-tags))
+;         (notmuch-search-tag (list (concat "-" "delete") "+inbox"))
+;       (notmuch-search-tag (list (concat "+" "delete") "-inbox" "-unread")))
+; (next-line)
+; ))
+; 
+; (define-key notmuch-search-mode-map "d"
+;   (notmuch-search-toggle-delete))
+; 
+; (require 'notmuch-address)
+; (setq notmuch-address-command "~/src/vala-notmuch/addrlookup")
+; (notmuch-address-message-insinuate)
+; (setq gnus-inhibit-images nil)
+; (require 'gnus-art)
 #+end_src
 * tags
 ** find-next-tag

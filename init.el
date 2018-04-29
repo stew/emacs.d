@@ -32,17 +32,20 @@
    (quote
     ("55d31108a7dc4a268a1432cd60a7558824223684afecefa6fae327212c40f8d3" default)))
  '(dired-dwim-target t)
+ '(ediff-window-setup-function (quote ediff-setup-windows-multiframe))
  '(ensime-graphical-tooltips t)
  '(exec-path
    (quote
-    ("~/.sdkman/candidates/sbt/current/bin" "~/.sdkman/candidates/java/current/bin" "~/.nix-profile/bin" "/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin" "~/.cargo/bin")))
+    ("/nix/var/nix/profiles/default/bin" "~/.nix-profile/bin" "/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin" "~/bin")))
  '(git-link-remote-alist
    (quote
     (("github" git-link-github)
      ("bitbucket" git-link-bitbucket)
      ("gitorious" git-link-gitorious)
      ("gitlab" git-link-gitlab)
-     ("gh" git-link-github))))
+     ("gh" git-link-github)
+     ("git" git-link-github)
+     ("tgt" git-link-tgt))))
  '(grep-find-ignored-directories
    (quote
     ("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ".ensime_cache" "target")))
@@ -84,8 +87,13 @@
     (org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-protocol)))
  '(package-selected-packages
    (quote
-    (haskell-mode pretty-mode ivy ensime cider git-gutter+ jdee counsel znc yaml-mode use-package twittering-mode smex scala-mode2 rust-mode paredit org-jira multiple-cursors markdown-mode magit key-chord json-mode intero hydra helm-projectile helm-grepint helm-git-grep hcl-mode golint go-eldoc go-autocomplete flymake-rust confluence avy autumn-light-theme ansible ace-jump-mode)))
+    (exec-path-from-shell flycheck flycheck-mode nix-mode nix-buffer haskell-mode pretty-mode ivy ensime cider git-gutter+ jdee counsel znc yaml-mode use-package twittering-mode smex scala-mode2 rust-mode paredit org-jira multiple-cursors markdown-mode magit key-chord json-mode intero hydra helm-projectile helm-grepint helm-git-grep hcl-mode golint go-eldoc go-autocomplete flymake-rust confluence avy autumn-light-theme ansible ace-jump-mode)))
  '(python-indent-offset 2)
+ '(safe-local-variable-values
+   (quote
+    ((dante-target . "tgt-data")
+     (dante-target . "hmach")
+     (dante-target . "tgt-elab"))))
  '(sbt:program-name
    "/Users/stew.oconnor/.sdkman/candidates/sbt/current/bin/sbt")
  '(scala-indent:add-space-for-scaladoc-asterisk nil)
@@ -98,7 +106,6 @@
  '(tab-width 4)
  '(tool-bar-mode nil)
  '(twittering-username "stewoconnor")
- '(with-editor-emacsclient-executable "~/.nix-profile/bin/emacsclient")
  '(yas-snippet-dirs (quote ("~/.emacs.d/snippets"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
