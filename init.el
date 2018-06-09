@@ -27,6 +27,7 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#2d3743" "#ff4242" "#74af68" "#dbdb95" "#34cae2" "#008b8b" "#00ede1" "#e1e1e0"])
+ '(bibtex-field-indentation 4)
  '(column-number-mode t)
  '(custom-safe-themes
    (quote
@@ -46,6 +47,7 @@
      ("gh" git-link-github)
      ("git" git-link-github)
      ("tgt" git-link-tgt))))
+ '(global-linum-mode t)
  '(grep-find-ignored-directories
    (quote
     ("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" ".ensime_cache" "target")))
@@ -87,11 +89,16 @@
     (org-bbdb org-bibtex org-docview org-gnus org-info org-irc org-mhe org-protocol)))
  '(package-selected-packages
    (quote
-    (exec-path-from-shell flycheck flycheck-mode nix-mode nix-buffer haskell-mode pretty-mode ivy ensime cider git-gutter+ jdee counsel znc yaml-mode use-package twittering-mode smex scala-mode2 rust-mode paredit org-jira multiple-cursors markdown-mode magit key-chord json-mode intero hydra helm-projectile helm-grepint helm-git-grep hcl-mode golint go-eldoc go-autocomplete flymake-rust confluence avy autumn-light-theme ansible ace-jump-mode)))
+    (lua-mode cargo company-racer racer racer-mode ido-completing-read+ ido-ubiquitous powerline exec-path-from-shell flycheck flycheck-mode nix-mode nix-buffer haskell-mode pretty-mode ivy ensime cider git-gutter+ jdee counsel znc yaml-mode use-package twittering-mode smex scala-mode2 rust-mode paredit org-jira multiple-cursors markdown-mode magit key-chord json-mode intero hydra helm-projectile helm-grepint helm-git-grep hcl-mode golint go-eldoc go-autocomplete flymake-rust confluence avy autumn-light-theme ansible ace-jump-mode)))
  '(python-indent-offset 2)
+ '(racer-rust-src-path "~/src/rust/src")
+ '(rust-cargo-bin "~/.nix-profile/bin/cargo")
  '(safe-local-variable-values
    (quote
-    ((dante-target . "tgt-data")
+    ((dante-target . "new-elab")
+     (dante-target . "tgt-api")
+     (dante-target . "bale")
+     (dante-target . "tgt-data")
      (dante-target . "hmach")
      (dante-target . "tgt-elab"))))
  '(sbt:program-name

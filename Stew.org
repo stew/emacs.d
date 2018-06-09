@@ -93,7 +93,7 @@ when I create a third column, make them all 1/3 size
 (ad-activate 'split-window-right)
 #+end_src
 #+begin_src emacs-lisp
-(setq visible-bell t)
+(setq visible-bell nil)
 (if (not (null window-system))
     (progn
       (tool-bar-mode -1)))
@@ -101,7 +101,6 @@ when I create a third column, make them all 1/3 size
 
 * widgets
 ** git-gutter
-** helm
 ** projectile
 http://wikemacs.org/index.php/Projectile
 
@@ -119,13 +118,13 @@ similar
 A replacement for ido?
 
 #+begin_src emacs-lisp
-(use-package ivy
-  :ensure t
-  :pin melpa
-  :diminish ivy-mode
-  :config
-  (ivy-mode 1)
-  (bind-key "C-c C-r" 'ivy-resume))
+;(use-package ivy
+;  :ensure t
+;  :pin melpa
+;  :diminish ivy-mode
+;  :config
+;  (ivy-mode 1)
+;  (bind-key "C-c C-r" 'ivy-resume))
 #+end_src
 ** ido
 http://wikemacs.org/index.php/Ido
@@ -135,7 +134,15 @@ buffers and more. Can't imagine live without it once you get used to
 it.  
 
 #+begin_src emacs-lisp
-;(use-package )
+(use-package ido-completing-read+
+  :ensure t
+  :config
+    (progn 
+      (ido-everywhere)
+      (ido-mode 1)
+     (setq ido-everywhere 1))
+)
+
 ;(ido-mode t)
 ;(setq ido-auto-merge-delay-time 2)
 ;(setq ido-everywhere t)
@@ -242,6 +249,7 @@ code folding. lets you collapse method bodies in source.
 I ran out of pinkies and modifier keys, this lets you assign a
 function to two keys hit in rapid succession
 #+begin_src emacs-lisp
+
 (use-package key-chord
   :ensure t)
 (key-chord-define-global "jj" 'avy-goto-char)
@@ -249,6 +257,11 @@ function to two keys hit in rapid succession
 (key-chord-define-global "jn" 'linum-mode)
 (key-chord-define-global "qo" 'open-line)
 (key-chord-define-global "qr" 'rgrep)
+(key-chord-define-global "qp" 'projectile-grep)
+(key-chord-define-global "qb" 'magit-blame-popup)
+(key-chord-define-global "qn" 'magit-blame-mode)
+
+
 (key-chord-mode +1)
 #+end_src
 
@@ -352,6 +365,85 @@ function to two keys hit in rapid succession
    :ensure t
    :pin melpa)
 #+end_src
+***
+#+begin_src emacs-lisp
+(defhydra help/hydra/timestamp (:color blue :hint nil)
+  "
+Timestamps: (_q_uit)
+  Date: _I_SO, _U_S, US With _Y_ear and _D_ashes, US In _W_ords
+   Date/Time: _N_o Colons or _w_ith
+    Org-Mode: _R_ight Now or _c_hoose
+"
+  ("q" nil)
+
+  ("I" help/insert-datestamp)
+  ("U" help/insert-datestamp-us)
+  ("Y" help/insert-datestamp-us-full-year)
+  ("D" help/insert-datestamp-us-full-year-and-dashes)
+  ("W" help/insert-datestamp-us-words)
+
+  ("N" help/insert-timestamp-no-colons)
+  ("w" help/insert-timestamp)
+
+  ("R" help/org-time-stamp-with-seconds-now)
+  ("c" org-time-stamp))
+(key-chord-define-global "qd" #'help/hydra/timestamp/body)
+(defun help/insert-datestamp ()
+  "Produces and inserts a partial ISO 8601 format timestamp."
+  (interactive)
+  (insert (format-time-string "%F")))
+(defun help/insert-datestamp-us ()
+  "Produces and inserts a US datestamp."
+  (interactive)
+  (insert (format-time-string "%m/%d/%y")))
+(defun help/insert-datestamp-us-full-year-and-dashes ()
+  "Produces and inserts a US datestamp with full year and dashes."
+  (interactive)
+  (insert (format-time-string "%m-%d-%Y")))
+(defun help/insert-datestamp-us-full-year ()
+  "Produces and inserts a US datestamp with full year."
+  (interactive)
+  (insert (format-time-string "%m/%d/%Y")))
+(defun help/insert-datestamp-us-words ()
+  "Produces and inserts a US datestamp using words."
+  (interactive)
+  (insert (format-time-string "%A %B %d, %Y")))
+(defun help/insert-timestamp-no-colons ()
+  "Inserts a full ISO 8601 format timestamp with colons replaced by hyphens."
+  (interactive)
+  (insert (help/get-timestamp-no-colons)))
+(defun help/insert-datestamp ()
+  "Produces and inserts a partial ISO 8601 format timestamp."
+  (interactive)
+  (insert (format-time-string "%F")))
+(defun help/get-timestamp-no-colons ()
+  "Produces a full ISO 8601 format timestamp with colons replaced by hyphens."
+  (interactive)
+  (let* ((timestamp (help/get-timestamp))
+         (timestamp-no-colons (replace-regexp-in-string ":" "-" timestamp)))
+    timestamp-no-colons))
+(defun help/get-timestamp ()
+  "Produces a full ISO 8601 format timestamp."
+  (interactive)
+  (let* ((timestamp-without-timezone (format-time-string "%Y-%m-%dT%T"))
+         (timezone-name-in-numeric-form (format-time-string "%z"))
+         (timezone-utf-offset
+          (concat (substring timezone-name-in-numeric-form 0 3)
+                  ":"
+                  (substring timezone-name-in-numeric-form 3 5)))
+         (timestamp (concat timestamp-without-timezone
+                            timezone-utf-offset)))
+    timestamp))
+(defun help/insert-timestamp ()
+  "Inserts a full ISO 8601 format timestamp."
+  (interactive)
+  (insert (help/get-timestamp)))
+(defun help/org-time-stamp-with-seconds-now ()
+  (interactive)
+  (let ((current-prefix-arg '(16)))
+    (call-interactively 'org-time-stamp)))
+#+end_src
+
 * keybindings
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-SPC") 'cycle-spacing)
@@ -456,17 +548,21 @@ use-package sbt-mode
 *** ensime
 
 #+begin_src emacs-lisp
-    (progn 
-      (setq ensime-startup-notification nil)
-      (setq ensime-startup-snapshot-notification nil))
+;    (progn 
+;      (setq ensime-startup-notification nil)
+;      (setq ensime-startup-snapshot-notification nil))
 
-(use-package ensime
-  :ensure t
-  :config
-    (progn 
-      (setq ensime-startup-notification nil)
-      (setq ensime-startup-snapshot-notification nil))
-  :pin melpa)
+;(use-package ensime
+;  :ensure t
+;  :config
+;    (progn 
+;      (setq ensime-startup-notification nil)
+;      (setq ensime-startup-snapshot-notification nil))
+;  :pin melpa)
+
+(add-to-list 'load-path "~/src/lsp-scala")
+(require 'lsp-scala)
+
 
 (use-package sbt-mode
   :ensure t
@@ -862,7 +958,11 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 ** haskell
 #+begin_src emacs-lisp
 (use-package flycheck
-  :ensure t)
+  :ensure t
+  :bind (("M-n" . flycheck-next-error)
+         ("M-p" . flycheck-previous-error)
+        )
+)
 
 (use-package haskell-mode
   :ensure t
@@ -931,6 +1031,11 @@ Org-mobile setup:
      (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
      (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 #+end_src
+** lua
+#+begin_src emacs-lisp
+(use-package lua-mode :ensure t)
+#+end_src
+
 ** hcl
 #+begin_src emacs-lisp
    (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
@@ -940,6 +1045,28 @@ Org-mobile setup:
 #+begin_src emacs-lisp
 (use-package paredit 
   :ensure t)
+#+end_src
+** rust
+#+begin_src emacs-lisp
+(use-package rust-mode 
+  :ensure t
+  :pin "melpa")
+  
+(use-package cargo
+  :ensure t
+  :pin "melpa"
+  :hook ((rust-mode . cargo-minor-mode)))
+
+(use-package racer
+  :ensure t
+  :config  (progn
+    (setq racer-cmd "~/.cargo/bin/racer") ;; Rustup binaries PATH
+    (setq racer-rust-src-path "~/src/rust/src")) ;; Rust source code PATH
+  :hook (;(rust-mode . racer-mode)
+         (racer-mode . company-mode)
+         (racer-mode . eldoc-mode)))
+
+
 #+end_src
 ** company
 #+begin_src emacs-lisp
