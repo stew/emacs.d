@@ -15,9 +15,7 @@
 This is my .emacs file, organized into an org-mode document using org-babel.
 * mac stuff
 #+begin_src emacs-lisp
-(use-package exec-path-from-shell
-   :ensure t
-)
+(use-package exec-path-from-shell)
 (let ((nix-vars '("NIX_LINK"
                   "NIX_PATH"
                   "SSL_CERT_FILE")))
@@ -93,14 +91,19 @@ when I create a third column, make them all 1/3 size
 (ad-activate 'split-window-right)
 #+end_src
 #+begin_src emacs-lisp
-(setq visible-bell nil)
+(setq visible-bell t)
 (if (not (null window-system))
     (progn
       (tool-bar-mode -1)))
 #+end_src
 
 * widgets
+** which-key
+#+begin_src emacs-lisp
+(use-package which-key :init (which-key-mode t)
+)
 ** git-gutter
+** helm
 ** projectile
 http://wikemacs.org/index.php/Projectile
 
@@ -110,21 +113,8 @@ by travelling through ancestral directories until wy find a .git or
 similar
 
 #+begin_src emacs-lisp
-(use-package projectile
-  :ensure t)
+(use-package projectile)
 (projectile-global-mode)
-#+end_src
-** ivy
-A replacement for ido?
-
-#+begin_src emacs-lisp
-;(use-package ivy
-;  :ensure t
-;  :pin melpa
-;  :diminish ivy-mode
-;  :config
-;  (ivy-mode 1)
-;  (bind-key "C-c C-r" 'ivy-resume))
 #+end_src
 ** ido
 http://wikemacs.org/index.php/Ido
@@ -134,18 +124,9 @@ buffers and more. Can't imagine live without it once you get used to
 it.  
 
 #+begin_src emacs-lisp
-(use-package ido-completing-read+
-  :ensure t
-  :config
-    (progn 
-      (ido-everywhere)
-      (ido-mode 1)
-     (setq ido-everywhere 1))
-)
-
-;(ido-mode t)
-;(setq ido-auto-merge-delay-time 2)
-;(setq ido-everywhere t)
+(ido-mode t)
+(setq ido-auto-merge-delay-time 2)
+(setq ido-everywhere t)
 #+end_src
 
 - hit C-f to go back to a "normal" prompt
@@ -180,18 +161,7 @@ Generate a github link to the current point or region.
 
 #+begin_src emacs-lisp
 ;(add-to-list 'load-path "~/.emacs.d/git-link")
-(use-package git-link
-  :ensure t
-  :config (defun git-link-tgt (hostname dirname filename branch commit start end)
-  (format "https://git.target.com/%s/blob/%s/%s"
-	  dirname
-	  (or branch commit)
-	  (concat filename
-                  (when start
-                     (concat "#"
-                            (if end
-                                (format "L%s-L%s" start end)
-                              (format "L%s" start))))))))
+(use-package git-link)
 #+end_src
 ** smex
 http://www.emacswiki.org/emacs/Smex
@@ -199,7 +169,6 @@ http://www.emacswiki.org/emacs/Smex
 M-x enhancement.
 #+begin_src emacs-lisp
 (use-package smex
-  :ensure t
   :commands smex 
   :init (bind-key "M-x" 'smex))
 
@@ -217,9 +186,7 @@ fast cursor movement. see the demo:
 http://dl.dropboxusercontent.com/u/3254819/AceJumpModeDemo/AceJumpDemo.htm
 
 #+begin_src emacs-lisp
-(use-package avy
-  :ensure t)
-
+(use-package avy)
 #+end_src
 ** multiple cursors
 #+begin_src emacs-lisp
@@ -246,34 +213,46 @@ code folding. lets you collapse method bodies in source.
 (global-set-key (kbd "C-c C-h C-c") '(lambda () (interactive) (hs-hide-level 2)))
 #+end_src
 ** key-chord
+
 I ran out of pinkies and modifier keys, this lets you assign a
 function to two keys hit in rapid succession
+
+I override two variables because I'm old and slow and I choose my chords wisely:
+
+(defvar key-chord-two-keys-delay 0.1	; 0.05 or 0.1
+  "Max time delay between two key press to be considered a key chord.")
+
+(defvar key-chord-one-key-delay 0.2	; 0.2 or 0.3 to avoid first autorepeat
+  "Max time delay between two press of the same key to be considered a key chord.
+This should normally be a little longer than `key-chord-two-keys-delay'.")
+
 #+begin_src emacs-lisp
-
 (use-package key-chord
-  :ensure t)
-(key-chord-define-global "jj" 'avy-goto-char)
-(key-chord-define-global "jl" 'avy-goto-line)
-(key-chord-define-global "jn" 'linum-mode)
-(key-chord-define-global "qo" 'open-line)
-(key-chord-define-global "qr" 'rgrep)
-(key-chord-define-global "qp" 'projectile-grep)
-(key-chord-define-global "qb" 'magit-blame-popup)
-(key-chord-define-global "qn" 'magit-blame-mode)
+  :config (setq key-chord-two-keys-delay 0.8)
+          (setq key-chord-one-key-delay 0.5)
+          (key-chord-define-global "jj" 'avy-goto-char)
+          (key-chord-define-global "jl" 'avy-goto-line)
+          (key-chord-define-global "jn" 'linum-mode)
+          (key-chord-define-global "qo" 'open-line)
+          (key-chord-define-global "qr" 'rgrep)
+          (key-chord-mode +1)
+          (key-chord-define-global "qp" 'projectile-grep)
+          (key-chord-define-global "qf" 'projectile-find-file)
+          (key-chord-define-global "qb" 'magit-blame-popup)
+          (key-chord-define-global "qn" 'magit-blame-mode)
+          (key-chord-define-global "ql" 'goto-line)
 
-
-(key-chord-mode +1)
+)
 #+end_src
 
 ** magit
 #+begin_src emacs-lisp
-(use-package magit
-  :ensure t)
+(use-package magit)
 (global-set-key (kbd "C-c C-v m") 'magit-status)
 #+end_src
 ** ediff
 #+begin_src emacs-lisp
-; (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+end_src
 ** calendar
 #+begin_src emacs-lisp
@@ -356,14 +335,32 @@ function to two keys hit in rapid succession
   (dolist (char-regexp alist)
     (set-char-table-range composition-function-table (car char-regexp)
                           `([,(cdr char-regexp) 0 font-shape-gstring]))))
+#+end_src
 
+** flycheck
+#+begin_src emacs-lisp
+;(use-package flycheck
+;;  :hook (prog-mode . flycheck-mode)
+;  :ensure t
+;  :bind (("M-n" . flycheck-next-error)
+;         ("M-p" . flycheck-previous-error)
+;        )
+;)
+
+
+(use-package flymake
+;;  :hook (prog-mode . flycheck-mode)
+;  :ensure t
+  :bind (("M-n" . flymake-goto-next-error)
+         ("M-p" . flymake-goto-previous-error)
+        )
+)
+;)
 #+end_src
 
 ** hydra
 #+begin_src emacs-lisp
-(use-package hydra
-   :ensure t
-   :pin melpa)
+(use-package hydra)
 #+end_src
 ***
 #+begin_src emacs-lisp
@@ -443,12 +440,12 @@ Timestamps: (_q_uit)
   (let ((current-prefix-arg '(16)))
     (call-interactively 'org-time-stamp)))
 #+end_src
-
 * keybindings
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-SPC") 'cycle-spacing)
 (global-set-key [delete] 'yow)
 (global-set-key "\M-,"    'beginning-of-buffer)
+(global-set-key (kbd "s-f") 'ns-popup-font-panel)
 (global-set-key "\M-."    'end-of-buffer)
 (global-set-key "\M-g"    'goto-line)
 (global-set-key "\C-xra"  'append-to-register)
@@ -537,40 +534,21 @@ _h_   _l_   _o_k        _y_ank
 * modes
 ** scala
 *** scala2-mode
-#+begin_src emacs-lisp(
-use-package sbt-mode
-  :pin melpa)
+#+begin_src emacs-lisp
+(use-package sbt-mode)
 
 (use-package scala-mode
-  :pin melpa)
+  :hook (scala-mode . lsp)
+)
+
+(use-package sh-mode
+  :hook (sh-mode . lsp)
+)
 
 #+end_src
 *** ensime
 
 #+begin_src emacs-lisp
-;    (progn 
-;      (setq ensime-startup-notification nil)
-;      (setq ensime-startup-snapshot-notification nil))
-
-;(use-package ensime
-;  :ensure t
-;  :config
-;    (progn 
-;      (setq ensime-startup-notification nil)
-;      (setq ensime-startup-snapshot-notification nil))
-;  :pin melpa)
-
-(add-to-list 'load-path "~/src/lsp-scala")
-(require 'lsp-scala)
-
-
-(use-package sbt-mode
-  :ensure t
-  :pin melpa)
-
-(use-package scala-mode
-  :ensure t
-  :pin melpa)
 
 (add-to-list 'exec-path "~/bin")
 
@@ -941,48 +919,23 @@ this lets me toggle a shell window where i'm running sbt back and forth from com
 (setq js-indent-level 2)
 #+end_src
 
-** nix
-#+begin_src emacs-lisp
-(use-package nix-mode
-  :ensure t)
-
-(use-package nix-buffer
-  :ensure t
-  :commands nix-bufffer
-  :config
-  (add-hook 'find-file-hook 'nix-buffer)
-  (add-hook 'haskell-interactive-mode-hook 'nix-buffer)
-)
-
-#+end_src
 ** haskell
 #+begin_src emacs-lisp
-(use-package flycheck
-  :ensure t
-  :bind (("M-n" . flycheck-next-error)
-         ("M-p" . flycheck-previous-error)
-        )
-)
-
 (use-package haskell-mode
-  :ensure t
   :mode "\\.hs\\'"
   :commands haskell-mode
+  :bind ("C-c C-s" . fix-imports)
+  :hook (haskell-mode . lsp)
   :config
   (custom-set-variables
    '(haskell-ask-also-kill-buffers nil)
    '(haskell-interactive-popup-errors nil))
-  (add-hook 'haskell-mode-hook 'flycheck-mode)
-  (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-)
 
-(use-package dante
-  :ensure t
-  :after haskell-mode
-  :commands 'dante-mode
-  :init
-  (add-hook 'haskell-mode-hook 'dante-mode))
+;  (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+;  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+;  (add-hook 'haskell-mode-hook 'flycheck-mode)
+;  (add-hook 'haskell-mode-hook 'hindent-mode)
+  )
 
 #+end_src
 ** org-mode
@@ -1031,11 +984,6 @@ Org-mobile setup:
      (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
      (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 #+end_src
-** lua
-#+begin_src emacs-lisp
-(use-package lua-mode :ensure t)
-#+end_src
-
 ** hcl
 #+begin_src emacs-lisp
    (add-to-list 'auto-mode-alist '("\\.tf\\'" . hcl-mode))
@@ -1043,44 +991,49 @@ Org-mobile setup:
 
 ** paredit
 #+begin_src emacs-lisp
-(use-package paredit 
-  :ensure t)
+(use-package paredit)
 #+end_src
 ** rust
 #+begin_src emacs-lisp
-(use-package rust-mode 
-  :ensure t
-  :pin "melpa")
-  
+(defun paredit-never-space (endp delimiter)
+  "Do not automatically insert a space" nil)
+
+
+(defun rust-mode-paredit-hook ()
+  (enable-paredit-mode)
+  (add-to-list (make-local-variable 'paredit-space-for-delimiter-predicates)
+               'paredit-never-space))
+
+(use-package rust-mode
+    :hook (rust-mode . lsp)
+    :mode "\\.rs\\'"
+)
+
+(use-package lsp-mode
+  :bind ("M-." . lsp-goto-implementation)
+  :commands lsp)
+
+(use-package lsp-ui)
+
 (use-package cargo
-  :ensure t
-  :pin "melpa"
-  :hook ((rust-mode . cargo-minor-mode)))
+  :hook (rust-mode . cargo-minor-mode))
 
-(use-package racer
-  :ensure t
-  :config  (progn
-    (setq racer-cmd "~/.cargo/bin/racer") ;; Rustup binaries PATH
-    (setq racer-rust-src-path "~/src/rust/src")) ;; Rust source code PATH
-  :hook (;(rust-mode . racer-mode)
-         (racer-mode . company-mode)
-         (racer-mode . eldoc-mode)))
-
-
-#+end_src
+#+End_src
 ** company
 #+begin_src emacs-lisp
 (use-package company
-  :ensure t
+  :hook (prog-mode . company-mode)
+  :config (setq company-tooltip-align-annotations t)
+          (setq company-minimum-prefix-length 1)
+
   :bind (("C-c /" . company-complete))
-  :config (global-company-mode))
+)
+
 #+end_src
 ** misc
 #+begin_src emacs-lisp
-(use-package yaml-mode
-  :ensure t)
-(use-package markdown-mode
-  :ensure t)
+(use-package yaml-mode)
+(use-package markdown-mode)
 
 #+end_src
 * directories
@@ -1323,3 +1276,28 @@ and does nothing if there isn't one."
        interest
     (sum-daily-interest principal (+ interest (* rate principal)) rate (- days 1))))
 #+end_src
+* org-babel
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :bind ("C-c <right>" . org-demote-subtree)
+  :bind ("C-c <left>" . org-promote-subtree)
+)
+
+(org-babel-do-load-languages 'org-babel-load-languages
+    '(
+        (shell . t)
+        (python . t)
+    )
+)
+
+#+END_SRC
+* target
+
+#+BEGIN_SRC emacs-lisp
+  (defun target-org ()
+    (interactive)
+    (find-file "~/OneDrive - Target Corporation/target.org"))
+#+END_SRC
+
+#+RESULTS:
+: target-org
